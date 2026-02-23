@@ -1,0 +1,79 @@
+/* Register Page Styles */
+
+.register-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.register-title {
+  text-align: center;
+  color: #daa520;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  padding: 10px 12px;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #daa520;
+  box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+}
+
+.submit-btn {
+  padding: 12px;
+  background-color: #daa520;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #b8860b;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 16px;
+  color: #666;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #daa520;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}

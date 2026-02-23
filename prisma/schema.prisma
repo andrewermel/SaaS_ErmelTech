@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Ingredient {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  weightG   Int
+  cost      Decimal   @db.Decimal(10,4)
+  portions  Portion[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Snack {
+  id            Int           @id @default(autoincrement())
+  name          String
+  imageUrl      String?
+  snackPortions SnackPortion[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Portion {
+  id            Int           @id @default(autoincrement())
+  ingredient    Ingredient    @relation(fields: [ingredientId], references: [id])
+  ingredientId  Int
+  name          String
+  weightG       Int
+  cost          Decimal       @db.Decimal(10,4)
+  snackPortions SnackPortion[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([ingredientId])
+}
+
+model SnackPortion {
+  id        Int      @id @default(autoincrement())
+  snack     Snack    @relation(fields: [snackId], references: [id], onDelete: Cascade)
+  snackId   Int
+  portion   Portion  @relation(fields: [portionId], references: [id], onDelete: Cascade)
+  portionId Int
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@unique([snackId, portionId])
+  @@index([snackId])
+  @@index([portionId])
+}

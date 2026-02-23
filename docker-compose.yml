@@ -1,0 +1,76 @@
+services:
+  # 🐘 Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: blacklanches-postgres
+    environment:
+      POSTGRES_USER: blacklanches
+      POSTGRES_PASSWORD: blacklanches123
+      POSTGRES_DB: blacklanches_db
+    ports:
+      - '5432:5432'
+    volumes:
+      # 💾 Persiste dados do banco
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U blacklanches -d blacklanches_db',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blacklanches-network
+
+  # 🔙 Backend (Node.js + Express)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blacklanches-backend
+    environment:
+      DATABASE_URL: postgresql://blacklanches:blacklanches123@postgres:5432/blacklanches_db
+      JWT_SECRET: sua_chave_secreta_super_segura_123456
+      PORT: 3000
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # 📁 Monta pasta de uploads
+      - ./public/uploads:/app/backend/public/uploads
+    networks:
+      - blacklanches-network
+
+  # 🎨 Frontend (React + Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: blacklanches-frontend
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://backend:3000/api/v1
+    volumes:
+      # 📁 Hot reload: mapeia pasta src para mudanças em tempo real
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    networks:
+      - blacklanches-network
+
+# 📊 Volumes persistentes
+volumes:
+  postgres_data:
+
+# 🌐 Network para comunicação entre containers
+networks:
+  blacklanches-network:
+    driver: bridge

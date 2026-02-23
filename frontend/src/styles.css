@@ -1,0 +1,408 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =================================
+   VARIÁVEIS CSS - BlackLanches
+   ================================= */
+:root {
+  /* Cores principais */
+  --color-primary: #daa520;
+  --color-primary-dark: #b8860b;
+  --color-primary-light: #f0c74c;
+
+  --color-danger: #f44336;
+  --color-danger-dark: #d32f2f;
+  --color-danger-light: #ff5252;
+
+  --color-background: #000000;
+  --color-surface: #1a1a1a;
+  --color-surface-light: #2d2d2d;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0b0b0;
+  --color-text-dark: #000000;
+
+  --color-border: #333333;
+  --color-border-light: #444444;
+
+  /* Espaçamentos */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Bordas */
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --radius-full: 999px;
+
+  /* Sombras */
+  --shadow-sm: 0 2px 8px rgba(218, 165, 32, 0.1);
+  --shadow-md: 0 4px 15px rgba(218, 165, 32, 0.2);
+  --shadow-lg: 0 8px 25px rgba(218, 165, 32, 0.4);
+
+  /* Transições */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* =================================
+   ESTILOS GLOBAIS - BlackLanches
+   ================================= */
+
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Body - Fundo preto */
+body {
+  font-family: Inter, system-ui, sans-serif;
+  margin: 0;
+  background: #000000;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+/* Container principal da aplicação */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 100vh;
+}
+
+/* ========== HEADER ========== */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #000000;
+  z-index: 100;
+  padding: 10px 20px;
+  border-bottom: 2px solid #daa520;
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+}
+
+/* Título BlackLanches - Dourado */
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #daa520;
+  text-align: center;
+  margin: 0;
+}
+
+/* ========== MENU HAMBÚRGUER ========== */
+.hamburger-menu {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-menu span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: #daa520;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-menu:hover span {
+  background-color: #fff;
+}
+
+/* Menu Lateral */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background-color: #1a1a1a;
+  z-index: 200;
+  transition: left 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+.side-menu.open {
+  left: 0;
+}
+
+.close-menu {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #daa520;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.3s ease;
+}
+
+.close-menu:hover {
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.side-menu nav {
+  display: flex;
+  flex-direction: column;
+  padding: 60px 20px 20px;
+  gap: 0;
+}
+
+.side-menu nav a {
+  color: #daa520;
+  text-decoration: none;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(218, 165, 32, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.side-menu nav a:hover {
+  background-color: rgba(218, 165, 32, 0.1);
+  color: #fff;
+  padding-left: 25px;
+}
+
+/* Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 150;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Botão de sair no header - Canto superior direito */
+.btn-logout-header {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  z-index: 101;
+  font-size: 14px;
+}
+
+.btn-logout-header:hover {
+  background-color: #d32f2f;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
+}
+
+/* ========== MAIN ========== */
+main {
+  padding-top: 80px; /* Espaço para o header fixo */
+  padding-bottom: 40px;
+  min-height: calc(100vh - 80px);
+}
+
+/* ========== CARD (Quadrado branco) ========== */
+.card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(16, 24, 40, 0.12);
+  margin: 20px auto;
+  max-width: 1000px;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+/* ========== FORMS ========== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+input,
+select {
+  padding: 10px 12px;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #daa520;
+  box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+}
+
+/* ========== BUTTONS ========== */
+button {
+  padding: 10px 16px;
+  background: #daa520;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #b8860b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========== MENSAGENS ========== */
+.message {
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 6px;
+  color: #856404;
+  margin-bottom: 16px;
+}
+
+.error-message {
+  padding: 12px;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  color: #d32f2f;
+  margin-bottom: 16px;
+}
+
+.success-message {
+  padding: 12px;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+  color: #2e7d32;
+  margin-bottom: 16px;
+}
+
+/* ========== LOADING ========== */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0 12px;
+  }
+
+  .card {
+    padding: 16px;
+    margin: 12px auto;
+  }
+
+  header {
+    padding: 10px 16px;
+    height: 55px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .hamburger-menu {
+    left: 16px;
+  }
+
+  .btn-logout-header {
+    right: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  main {
+    padding-top: 70px;
+  }
+
+  .side-menu {
+    width: 250px;
+    left: -250px;
+  }
+}

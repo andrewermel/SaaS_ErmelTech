@@ -1,0 +1,4 @@
+# Ignorar todas as imagens enviadas
+*
+# Mas manter a pasta
+!.gitignore

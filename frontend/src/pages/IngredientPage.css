@@ -1,0 +1,209 @@
+/* Ingredient Page Styles */
+
+.ingredient-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-title {
+  color: #daa520;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-description {
+  color: #666;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.ingredient-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 2px solid #daa520;
+}
+
+.ingredient-form input {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px 12px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+}
+
+.ingredient-form input:focus {
+  outline: none;
+  border-color: #daa520;
+  box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+}
+
+.input-with-hint {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-with-hint input {
+  margin: 0;
+}
+
+.input-hint {
+  color: #555;
+  font-size: 11px;
+  font-style: italic;
+  padding-left: 4px;
+  background-color: rgba(218, 165, 32, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ingredient-form button {
+  padding: 10px 20px;
+  background-color: #daa520;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.ingredient-form button:hover {
+  background-color: #b8860b;
+}
+
+.btn-cancel {
+  background-color: #6c757d !important;
+}
+
+.btn-cancel:hover {
+  background-color: #545b62 !important;
+}
+
+.ingredient-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid #daa520;
+}
+
+.ingredient-table thead {
+  background: linear-gradient(
+    135deg,
+    #daa520 0%,
+    #b8860b 100%
+  );
+  border-bottom: 2px solid #b8860b;
+}
+
+.ingredient-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 700;
+  color: #000;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ingredient-table th.text-right {
+  text-align: right;
+}
+
+.ingredient-table th.text-center {
+  text-align: center;
+}
+
+.ingredient-table tbody tr {
+  border-bottom: 1px solid #e8e8e8;
+  transition: all 0.2s ease;
+}
+
+.ingredient-table tbody tr:hover {
+  background-color: #fffbf0;
+  transform: scale(1.01);
+}
+
+.ingredient-table tbody tr.editing {
+  background-color: #fff9e6;
+}
+
+.ingredient-table td {
+  padding: 12px;
+  color: #222;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ingredient-table td.text-right {
+  text-align: right;
+}
+
+.ingredient-table td.text-center {
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-buttons button {
+  padding: 6px 12px;
+  background-color: transparent;
+  border: 1px solid #e6e9ef;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.action-buttons button:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+}
+
+.back-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e6e9ef;
+}
+
+.back-section button {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.back-section button:hover {
+  background-color: #545b62;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
