@@ -85,7 +85,7 @@ function AppContent() {
           <span></span>
           <span></span>
         </button>
-        <h1 className="title">BlackLanches</h1>
+        <h1 className="title">ErmelTech SaaS</h1>
         {isAuthenticated && (
           <button
             className="btn-logout-header"

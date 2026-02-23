@@ -9,13 +9,13 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: '🍔 BlackLanches API',
+      title: '🍔 ErmelTech SaaS API',
       version: '1.0.0',
       description:
-        'API de gestão de custos para lanchonetes. Sistema que calcula automaticamente o custo real, peso e preço sugerido de venda para cada lanche.',
+        'API SaaS de gestão de custos para lanchonetes. Sistema multi-tenant que calcula automaticamente o custo real, peso e preço sugerido de venda para cada lanche.',
       contact: {
-        name: 'BlackLanches Support',
-        email: 'support@blacklanches.com',
+        name: 'ErmelTech Support',
+        email: 'support@ermeltech.com',
       },
     },
     servers: [

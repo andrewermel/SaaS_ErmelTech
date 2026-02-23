@@ -80,6 +80,7 @@ export class SnackService {
 
     return {
       id: snack.id,
+      companyId: snack.companyId,
       name: snack.name,
       imageUrl: snack.imageUrl,
       portions,
@@ -114,6 +115,7 @@ export class SnackService {
 
       return {
         id: snack.id,
+        companyId: snack.companyId,
         name: snack.name,
         imageUrl: snack.imageUrl,
         portions,

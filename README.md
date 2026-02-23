@@ -1,8 +1,8 @@
-# 🍔 BlackLanches - Sistema de Gestão de Custos para Lanchonete
+# 🍔 ErmelTech SaaS - Sistema de Gestão de Custos para Lanchonetes
 
 <div align="center">
 
-![BlackLanches Logo](https://img.shields.io/badge/BlackLanches-Sistema_de_Gest%C3%A3o-daa520?style=for-the-badge)
+![ErmelTech SaaS Logo](https://img.shields.io/badge/ErmelTech_SaaS-Sistema_de_Gest%C3%A3o-daa520?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Em_Produ%C3%A7%C3%A3o-success?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
@@ -12,19 +12,19 @@
 
 ---
 
-## 📖 A História Por Trás do BlackLanches
+## 📖 A História Por Trás do ErmelTech SaaS
 
 Este projeto nasceu de uma necessidade real, em um momento difícil. Após a enchente que atingiu nossa região, minha família precisou recomeçar do zero. Com coragem e determinação, decidiram abrir um pequeno negócio de lanches para sustentar a casa e reconstruir nossas vidas.
 
 Porém, surgiu um desafio: **como saber se estávamos tendo lucro ou prejuízo?** Como calcular o custo real de cada lanche? Quanto cada ingrediente representava no preço final? Essas perguntas nos motivaram a criar algo que pudesse ajudar não só a nossa família, mas todas as famílias empreendedoras que enfrentam desafios semelhantes.
 
-O **BlackLanches** é mais que um sistema - é uma ferramenta de recomeço, de esperança e de organização para quem quer fazer seu negócio crescer de forma sustentável.
+O **ErmelTech SaaS** é mais que um sistema - é uma ferramenta de recomeço, de esperança e de organização para quem quer fazer seu negócio crescer de forma sustentável.
 
 ---
 
-## 🎯 O Que o BlackLanches Faz?
+## 🎯 O Que o ErmelTech SaaS Faz?
 
-O BlackLanches é um sistema completo de gestão de custos para lanchonetes que permite:
+O ErmelTech SaaS é um sistema completo de gestão de custos para lanchonetes que permite:
 
 ### ✨ Funcionalidades Principais
 
@@ -91,8 +91,8 @@ Antes de começar, você precisa ter instalado em sua máquina:
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/API_BLACKLANCHES.git
-cd API_BLACKLANCHES
+git clone https://github.com/seu-usuario/SaaS_ErmelTech.git
+cd SaaS_ErmelTech
 
 # 2. Construa as imagens (primeira vez)
 docker compose build
@@ -144,8 +144,8 @@ Após iniciar com `docker compose up`, acesse a documentação interativa **no b
 ### 1️⃣ Clone o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/API_BLACKLANCHES.git
-cd API_BLACKLANCHES
+git clone https://github.com/seu-usuario/SaaS_ErmelTech.git
+cd SaaS_ErmelTech
 ```
 
 ### 2️⃣ Configure o Banco de Dados
@@ -154,7 +154,7 @@ Crie um banco de dados PostgreSQL:
 
 ```bash
 # No terminal do PostgreSQL
-createdb blacklanches
+createdb saas_ermeltech_db
 ```
 
 ### 3️⃣ Configure as Variáveis de Ambiente
@@ -163,7 +163,7 @@ Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 # Banco de Dados
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/blacklanches"
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/saas_ermeltech_db"
 
 # JWT
 JWT_SECRET="sua_chave_secreta_super_segura_aqui"
@@ -204,7 +204,7 @@ npm run dev:all
 
 ---
 
-## 📱 Como Usar o BlackLanches
+## 📱 Como Usar o ErmelTech SaaS
 
 ### 🧪 Opção 1: Testar via Swagger (Recomendado para Testes)
 
@@ -312,7 +312,7 @@ Se você vender por R$ 15,00, terá **R$ 8,40 de lucro** por lanche! 💰
 ## 📁 Estrutura do Projeto
 
 ```
-API_BLACKLANCHES/
+SaaS_ErmelTech/
 ├── frontend/              # Aplicação React + Vite
 │   ├── src/
 │   │   ├── components/   # Componentes reutilizáveis
@@ -606,7 +606,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 💖 Agradecimentos
 
-Este projeto é dedicado à minha família, que encontrou forças para recomeçar após a enchente. Que o BlackLanches ajude muitas outras famílias a prosperarem e alcançarem seus sonhos.
+Este projeto é dedicado à minha família, que encontrou forças para recomecar após a enchente. Que o ErmelTech SaaS ajude muitas outras famílias a prosperarem e alcançarem seus sonhos.
 
 **Para todas as famílias empreendedoras: não desistam! 💪**
 
@@ -614,7 +614,7 @@ Este projeto é dedicado à minha família, que encontrou forças para recomeça
 
 ## 📞 Contato
 
-Se você tem dúvidas, sugestões ou quer compartilhar sua história de uso do BlackLanches, entre em contato!
+Se você tem dúvidas, sugestões ou quer compartilhar sua história de uso do ErmelTech SaaS, entre em contato!
 
 ---
 

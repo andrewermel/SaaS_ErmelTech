@@ -2,6 +2,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 
 export interface Ingredient {
   id: number;
+  companyId?: number | null;
   name: string;
   weightG: number;
   cost: Decimal | string; // Decimal do Prisma ou string quando serializado
@@ -11,6 +12,7 @@ export interface Ingredient {
 
 export interface Portion {
   id: number;
+  companyId?: number | null;
   name: string;
   weightG: number;
   cost: Decimal | string;
@@ -35,6 +37,7 @@ export interface PortionWithQuantity extends Portion {
 
 export interface Snack {
   id: number;
+  companyId?: number | null;
   name: string;
   imageUrl?: string | null;
   snackPortions?: SnackPortion[];
@@ -44,10 +47,32 @@ export interface Snack {
 
 export interface User {
   id: number;
+  name: string;
   email: string;
   password: string;
   createdAt: Date;
+}
+
+export type Role = 'OWNER' | 'ADMIN' | 'EMPLOYEE';
+
+export interface Company {
+  id: number;
+  name: string;
+  slug: string;
+  email?: string | null;
+  phone?: string | null;
+  createdAt: Date;
   updatedAt: Date;
+}
+
+export interface UserCompany {
+  id: number;
+  userId: number;
+  companyId: number;
+  role: Role;
+  createdAt: Date;
+  user?: User;
+  company?: Company;
 }
 
 // Helper type retornado pela API com totais calculados

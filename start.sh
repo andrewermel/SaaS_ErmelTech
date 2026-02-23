@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 🐳 Script de Inicialização do BlackLanches com Docker
+# 🐳 Script de Inicialização do ErmelTech SaaS com Docker
 # Uso: bash start.sh
 
 echo "=================================="
-echo "🐳 Iniciando BlackLanches com Docker"
+echo "🐳 Iniciando ErmelTech SaaS com Docker"
 echo "=================================="
 echo ""
 

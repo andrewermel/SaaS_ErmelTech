@@ -4,9 +4,9 @@ services:
     image: postgres:16-alpine
     container_name: saas_ermeltech-postgres
     environment:
-      POSTGRES_USER: blacklanches
-      POSTGRES_PASSWORD: blacklanches123
-      POSTGRES_DB: blacklanches_db
+      POSTGRES_USER: ermeltech
+      POSTGRES_PASSWORD: ermeltech123
+      POSTGRES_DB: saas_ermeltech_db
     ports:
       - '5432:5432'
     volumes:
@@ -17,13 +17,13 @@ services:
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U blacklanches -d blacklanches_db',
+          'pg_isready -U ermeltech -d saas_ermeltech_db',
         ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - blacklanches-network
+      - ermeltech-network
 
   # 🔙 Backend (Node.js + Express)
   backend:
@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile
     container_name: saas_ermeltech-backend
     environment:
-      DATABASE_URL: postgresql://blacklanches:blacklanches123@postgres:5432/blacklanches_db
+      DATABASE_URL: postgresql://ermeltech:ermeltech123@postgres:5432/saas_ermeltech_db
       JWT_SECRET: sua_chave_secreta_super_segura_123456
       PORT: 3000
       NODE_ENV: production
@@ -45,7 +45,7 @@ services:
       # 📁 Monta pasta de uploads
       - ./public/uploads:/app/backend/public/uploads
     networks:
-      - blacklanches-network
+      - ermeltech-network
 
   # 🎨 Frontend (React + Vite)
   frontend:
@@ -64,7 +64,7 @@ services:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
     networks:
-      - blacklanches-network
+      - ermeltech-network
 
 # 📊 Volumes persistentes
 volumes:
@@ -72,5 +72,5 @@ volumes:
 
 # 🌐 Network para comunicação entre containers
 networks:
-  blacklanches-network:
+  ermeltech-network:
     driver: bridge

@@ -1,8 +1,8 @@
-# 📚 Guia Completo - Swagger na BlackLanches API
+# 📚 Guia Completo - Swagger na ErmelTech SaaS API
 
 ## 🎯 O Que É Swagger?
 
-Swagger (OpenAPI) é uma especificação que gera documentação interativa e automática de APIs. Na BlackLanches, você pode acessar a interface do Swagger em qualquer lugar que a aplicação estiver rodando.
+Swagger (OpenAPI) é uma especificação que gera documentação interativa e automática de APIs. Na ErmelTech SaaS, você pode acessar a interface do Swagger em qualquer lugar que a aplicação estiver rodando.
 
 ---
 
@@ -330,6 +330,6 @@ Adicionou um novo endpoint? Documente-o com comentários JSDoc:
 
 ---
 
-**Pronto! Agora você sabe como usar o Swagger na BlackLanches!** 🎉
+**Pronto! Agora você sabe como usar o Swagger na ErmelTech SaaS!** 🎉
 
 Qualquer dúvida, acesse a documentação oficial: https://swagger.io/

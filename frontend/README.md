@@ -1,4 +1,4 @@
-# BlackLanches Frontend (minimal)
+# ErmelTech SaaS Frontend
 
 Pequeno scaffold React usando Vite.
 

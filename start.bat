@@ -1,10 +1,10 @@
 @echo off
-REM 🐳 Script de Inicialização do BlackLanches com Docker para Windows
+REM 🐳 Script de Inicialização do ErmelTech SaaS com Docker para Windows
 REM Uso: start.bat
 
 cls
 echo ==================================
-echo 🐳 Iniciando BlackLanches com Docker
+echo 🐳 Iniciando ErmelTech SaaS com Docker
 echo ==================================
 echo.
 
