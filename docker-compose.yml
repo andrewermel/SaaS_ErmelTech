@@ -2,7 +2,7 @@ services:
   # 🐘 Banco de Dados PostgreSQL
   postgres:
     image: postgres:16-alpine
-    container_name: blacklanches-postgres
+    container_name: saas_ermeltech-postgres
     environment:
       POSTGRES_USER: blacklanches
       POSTGRES_PASSWORD: blacklanches123
@@ -30,7 +30,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: blacklanches-backend
+    container_name: saas_ermeltech-backend
     environment:
       DATABASE_URL: postgresql://blacklanches:blacklanches123@postgres:5432/blacklanches_db
       JWT_SECRET: sua_chave_secreta_super_segura_123456
@@ -52,7 +52,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: blacklanches-frontend
+    container_name: saas_ermeltech-frontend
     ports:
       - '5173:5173'
     depends_on:
