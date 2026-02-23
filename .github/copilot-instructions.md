@@ -1,0 +1,1 @@
+Leia o arquivo `.ai-instructions.md` na raiz do projeto ANTES de responder qualquer pergunta ou fazer qualquer alteração. Ele contém o contexto completo do projeto, a arquitetura, o roadmap SaaS e as regras de desenvolvimento.
