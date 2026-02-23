@@ -39,3 +39,6 @@ coverage/
 tmp/
 temp/
 nul
+
+# Planejamento local (não sobe para o repositório)
+PLANEJAMENTO_SAAS.html
