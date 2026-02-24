@@ -14,46 +14,89 @@ export class UserService {
    * @param name - Nome do usuário
    * @param email - Email único do usuário
    * @param password - Senha (será criptografada)
-   * @returns Usuário criado sem a senha
+   * @param companyName - Nome da empresa para onboarding
+   * @returns Usuário criado sem a senha + Empresa criada
    * @throws Erro se usuário já existe
    */
   async create(
     name: string,
     email: string,
-    password: string
+    password: string,
+    companyName: string
   ): Promise<{
-    id: number;
-    name: string;
-    email: string;
-    createdAt: Date;
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      createdAt: Date;
+    };
+    company: {
+      id: number;
+      name: string;
+      slug: string;
+      email: string | null;
+      phone: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    };
   }> {
-    // Padronizar email
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Verificar se usuário já existe
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
-
-    if (existingUser) {
+    if (existingUser)
       throw new Error('User already exists.');
-    }
 
-    // Criptografar senha com bcrypt (12 rounds)
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Criar usuário
-    const user = await prisma.user.create({
-      data: {
-        name: name.trim(),
-        email: normalizedEmail,
-        password: hashedPassword,
-      },
+    // Helper local para gerar slug (mesma lógica usada no CompanyService)
+    const generateSlug = (value: string) =>
+      value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+
+    // Transação: criar user, company e userCompany (OWNER)
+    const result = await prisma.$transaction(async tx => {
+      const user = await tx.user.create({
+        data: {
+          name: name.trim(),
+          email: normalizedEmail,
+          password: hashedPassword,
+        },
+      });
+
+      const company = await tx.company.create({
+        data: {
+          name: companyName.trim(),
+          slug: generateSlug(companyName),
+        },
+      });
+
+      await tx.userCompany.create({
+        data: {
+          userId: user.id,
+          companyId: company.id,
+          role: 'OWNER',
+        },
+      });
+
+      // Omitir password do user
+      const { password: _ } = user;
+      const userWithoutPassword = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+      };
+
+      return { user: userWithoutPassword, company };
     });
 
-    // Retornar sem a senha
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return result;
   }
 
   /**

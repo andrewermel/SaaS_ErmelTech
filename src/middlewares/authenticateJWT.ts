@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import type { JwtPayload } from "../types/jwt.js";
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import type { JwtPayload } from '../types/jwt.js';
 
-declare module "express-serve-static-core" {
+declare module 'express-serve-static-core' {
   interface Request {
     user?: JwtPayload;
   }
@@ -11,25 +11,28 @@ declare module "express-serve-static-core" {
 export function authenticateJWT(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): void {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    res.status(401).json({ error: "Token not provided." });
+    res.status(401).json({ error: 'Token not provided.' });
     return;
   }
 
-  if (!authHeader.startsWith("Bearer ")) {
+  if (!authHeader.startsWith('Bearer ')) {
     res.status(401).json({
-      error: "Invalid authorization header format. Expected 'Bearer <token>'.",
+      error:
+        "Invalid authorization header format. Expected 'Bearer <token>'.",
     });
     return;
   }
 
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    res.status(500).json({ error: "JWT secret not configured." });
+    res
+      .status(500)
+      .json({ error: 'JWT secret not configured.' });
     return;
   }
 
@@ -37,9 +40,19 @@ export function authenticateJWT(
 
   try {
     const decoded = jwt.verify(token, secret) as JwtPayload;
+    // Exigir que o token traga context de empresa (companyId)
+    if (!decoded || !decoded.companyId) {
+      res.status(403).json({
+        error: 'Token does not contain company context.',
+      });
+      return;
+    }
+
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(403).json({ error: "Invalid or expired token." });
+    res
+      .status(403)
+      .json({ error: 'Invalid or expired token.' });
   }
 }

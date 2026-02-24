@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { handleError } from '../helpers/errorHandler.js';
 import {
-    VALIDATION_MESSAGES,
-    validateEmail,
-    validatePassword
+  VALIDATION_MESSAGES,
+  validateEmail,
+  validatePassword,
 } from '../helpers/validationPatterns.js';
 import {
-    sendValidationError,
-    validateRequired,
+  sendValidationError,
+  validateRequired,
 } from '../helpers/validators.js';
 import { UserService } from '../services/userService.js';
 
@@ -30,7 +30,7 @@ export const createUser = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { name, email, password } = req.body;
+  const { name, email, password, companyName } = req.body;
 
   // Validar campos obrigatórios
   const nameError = validateRequired(name, 'Name');
@@ -47,6 +47,13 @@ export const createUser = async (
   if (passwordError)
     return sendValidationError(passwordError, res);
 
+  const companyError = validateRequired(
+    companyName,
+    'CompanyName'
+  );
+  if (companyError)
+    return sendValidationError(companyError, res);
+
   // Validar formato de email
   if (!validateEmail(email)) {
     return res
@@ -62,12 +69,13 @@ export const createUser = async (
   }
 
   try {
-    const user = await userService.create(
+    const result = await userService.create(
       name,
       email,
-      password
+      password,
+      companyName
     );
-    return res.status(201).json(user);
+    return res.status(201).json(result);
   } catch (error) {
     return handleError(error, 'Error creating user.', res);
   }

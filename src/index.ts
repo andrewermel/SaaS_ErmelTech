@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { swaggerSpec } from './config/swagger.js';
 import { authenticateJWT } from './middlewares/authenticateJWT.js';
 import authRoutes from './routes/authRoutes.js';
+import companyRoutes from './routes/companyRoutes.js';
 import ingredientRoutes from './routes/ingredientRoutes.js';
 import portionRoutes from './routes/portionRoutes.js';
 import snackRoutes from './routes/snackRoutes.js';
@@ -40,6 +41,11 @@ app.use('/api/v1/ingredients', ingredientRoutes);
 app.use('/api/v1/portions', portionRoutes);
 app.use('/api/v1/snacks', snackRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use(
+  '/api/v1/companies',
+  authenticateJWT,
+  companyRoutes
+);
 
 app.get(
   '/protected',

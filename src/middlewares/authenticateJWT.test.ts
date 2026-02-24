@@ -110,6 +110,8 @@ describe('authenticateJWT middleware', () => {
     const decodedToken = {
       userId: 1,
       email: 'test@example.com',
+      companyId: 1,
+      role: 'OWNER',
     };
     mockReq.headers = {
       authorization: 'Bearer valid-token',
@@ -124,5 +126,28 @@ describe('authenticateJWT middleware', () => {
 
     expect(mockNext).toHaveBeenCalled();
     expect(mockReq.user).toEqual(decodedToken);
+  });
+
+  it('should return 403 if token does not contain companyId', () => {
+    const decodedToken = {
+      userId: 1,
+      email: 'test@example.com',
+    };
+    mockReq.headers = {
+      authorization: 'Bearer valid-token',
+    };
+    verifyMock.mockReturnValue(decodedToken as any);
+
+    authenticateJWT(
+      mockReq as Request,
+      mockRes as Response,
+      mockNext
+    );
+
+    expect(mockStatus).toHaveBeenCalledWith(403);
+    expect(mockJson).toHaveBeenCalledWith({
+      error: 'Token does not contain company context.',
+    });
+    expect(mockNext).not.toHaveBeenCalled();
   });
 });

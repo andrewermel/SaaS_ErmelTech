@@ -11,6 +11,7 @@ describe('authController - login', () => {
   let mockJson: jest.Mock;
   let mockStatus: jest.Mock;
   let testUserId: number;
+  let testCompanyId: number;
   const testEmail =
     'testuser_' + Date.now() + '@example.com';
   const testPassword = 'Test@1234';
@@ -28,6 +29,24 @@ describe('authController - login', () => {
       },
     });
     testUserId = user.id;
+
+    // Criar empresa e vincular usuário
+    const company = await prisma.company.create({
+      data: {
+        name: 'Test Company',
+        slug: 'test-company',
+      },
+    });
+    testCompanyId = company.id;
+
+    await prisma.userCompany.create({
+      data: {
+        userId: user.id,
+        companyId: company.id,
+        role: 'OWNER',
+      },
+    });
+
     process.env.JWT_SECRET = 'test-secret';
   });
 
@@ -48,7 +67,13 @@ describe('authController - login', () => {
   });
 
   afterAll(async () => {
-    if (testUserId) {
+    if (testUserId && testCompanyId) {
+      await prisma.userCompany.deleteMany({
+        where: { userId: testUserId },
+      });
+      await prisma.company.delete({
+        where: { id: testCompanyId },
+      });
       await prisma.user.delete({
         where: { id: testUserId },
       });
@@ -131,5 +156,6 @@ describe('authController - login', () => {
     expect(mockJson).toHaveBeenCalled();
     const response = mockJson.mock.calls[0]?.[0] as any;
     expect(response).toHaveProperty('token');
+    expect(response).toHaveProperty('company');
   });
 });
