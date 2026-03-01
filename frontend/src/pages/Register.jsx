@@ -12,6 +12,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] =
     useState('');
+  const [companyName, setCompanyName] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -34,7 +35,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await register(name, email, password);
+      await register(name, email, password, companyName);
       setSuccess(true);
       setTimeout(() => {
         window.location.hash = ROUTES.SNACKS;
@@ -71,6 +72,15 @@ export default function Register() {
             onChange={e => setName(e.target.value)}
             required
             placeholder="Seu nome completo"
+          />
+
+          <Input
+            type="text"
+            label="Nome da sua lanchonete"
+            value={companyName}
+            onChange={e => setCompanyName(e.target.value)}
+            required
+            placeholder="Ex: Lanches do João"
           />
 
           <Input

@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { API_ENDPOINTS, STORAGE_KEYS } from '../constants';
 import { apiService } from '../services/apiService';
 
@@ -27,10 +28,14 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const data = await apiService.get(
-        API_ENDPOINTS.AUTH.ME
-      );
-      setUser(data.user);
+      const decoded = jwtDecode(token);
+      const userData = {
+        userId: decoded.userId,
+        email: decoded.email,
+        companyId: decoded.companyId,
+        role: decoded.role,
+      };
+      setUser(userData);
       setIsAuthenticated(true);
     } catch (error) {
       logout();
@@ -49,25 +54,25 @@ export const AuthProvider = ({ children }) => {
     );
     localStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
 
-    // Buscar dados do usuário após login
-    try {
-      const userData = await apiService.get(
-        API_ENDPOINTS.AUTH.ME
-      );
-      setUser(userData.user);
-    } catch (error) {
-      // Token salvo, usuário autenticado mesmo sem dados extras
-    }
-
+    // Decodificar JWT para extrair companyId e role
+    const decoded = jwtDecode(data.token);
+    const userData = {
+      userId: decoded.userId,
+      email: decoded.email,
+      companyId: decoded.companyId,
+      role: decoded.role,
+    };
+    setUser(userData);
     setIsAuthenticated(true);
     return data;
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, companyName) => {
     await apiService.post(API_ENDPOINTS.AUTH.REGISTER, {
       name,
       email,
       password,
+      companyName,
     });
 
     // Após criar usuário, fazer login

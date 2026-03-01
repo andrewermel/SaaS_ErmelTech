@@ -14,7 +14,7 @@ import Register from './pages/Register.jsx';
 import SnackPage from './pages/SnackPage.jsx';
 
 function AppContent() {
-  const { isAuthenticated, logout, loading } = useAuth();
+  const { isAuthenticated, logout, loading, user } = useAuth();
   const [route, setRoute] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -86,6 +86,14 @@ function AppContent() {
           <span></span>
         </button>
         <h1 className="title">BlackLanches</h1>
+        {isAuthenticated && user && (
+          <div className="header-info">
+            <span className="company-info">
+              {user.companyId && <span>🏢 {user.companyId}</span>}
+              {user.role && <span className="role-badge">{user.role}</span>}
+            </span>
+          </div>
+        )}
         {isAuthenticated && (
           <button
             className="btn-logout-header"
