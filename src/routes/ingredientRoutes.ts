@@ -7,15 +7,16 @@ import {
   updateIngredient,
 } from '../controllers/ingredientController.js';
 import { authenticateJWT } from '../middlewares/authenticateJWT.js';
+import { authorizeRole } from '../middlewares/authorizeRole.js';
 
 const router = Router();
 
 router.use(authenticateJWT);
 
-router.post('/', createIngredient);
 router.get('/', listIngredients);
 router.get('/:id', getIngredient);
-router.put('/:id', updateIngredient);
-router.delete('/:id', deleteIngredient);
+router.post('/', authorizeRole('OWNER', 'ADMIN'), createIngredient);
+router.put('/:id', authorizeRole('OWNER', 'ADMIN'), updateIngredient);
+router.delete('/:id', authorizeRole('OWNER'), deleteIngredient);
 
 export default router;

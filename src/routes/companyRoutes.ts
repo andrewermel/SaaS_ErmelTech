@@ -5,12 +5,16 @@ import {
   getMembers,
   updateCompany,
 } from '../controllers/companyController.js';
+import { authenticateJWT } from '../middlewares/authenticateJWT.js';
+import { authorizeRole } from '../middlewares/authorizeRole.js';
 
 const router = Router();
 
-router.post('/', createCompany);
+router.use(authenticateJWT);
+
 router.get('/:id', getCompany);
-router.put('/:id', updateCompany);
 router.get('/:id/members', getMembers);
+router.post('/', authorizeRole('OWNER'), createCompany);
+router.put('/:id', authorizeRole('OWNER'), updateCompany);
 
 export default router;
