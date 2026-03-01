@@ -1,10 +1,34 @@
 import { Decimal } from '@prisma/client/runtime/library';
 
+// ─── Roles & Multi-tenancy ───
+export type Role = 'OWNER' | 'ADMIN' | 'EMPLOYEE';
+
+export interface Company {
+  id: number;
+  name: string;
+  slug: string;
+  email?: string | null;
+  phone?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserCompany {
+  id: number;
+  userId: number;
+  companyId: number;
+  role: Role;
+  company?: Company;
+  createdAt: Date;
+}
+
+// ─── Entidades existentes ───
 export interface Ingredient {
   id: number;
   name: string;
   weightG: number;
-  cost: Decimal | string; // Decimal do Prisma ou string quando serializado
+  cost: Decimal | string;
+  companyId?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +39,7 @@ export interface Portion {
   weightG: number;
   cost: Decimal | string;
   ingredientId: number;
+  companyId?: number | null;
   ingredient?: Ingredient;
   createdAt: Date;
   updatedAt: Date;
@@ -37,6 +62,7 @@ export interface Snack {
   id: number;
   name: string;
   imageUrl?: string | null;
+  companyId?: number | null;
   snackPortions?: SnackPortion[];
   createdAt: Date;
   updatedAt: Date;

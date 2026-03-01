@@ -7,45 +7,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+// ─── Task 1.1: Company ───
+model Company {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  email       String?
+  phone       String?
+  users       UserCompany[]
+  ingredients Ingredient[]
+  portions    Portion[]
+  snacks      Snack[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
+// ─── Task 1.2: Role + UserCompany ───
+enum Role {
+  OWNER
+  ADMIN
+  EMPLOYEE
+}
+
+model UserCompany {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, companyId])
+  @@index([userId])
+  @@index([companyId])
+}
+
+model User {
+  id        Int           @id @default(autoincrement())
+  name      String
+  email     String        @unique
+  password  String
+  companies UserCompany[]
+  createdAt DateTime      @default(now())
+}
+
+// ─── Task 1.3: companyId nullable nos models existentes ───
 model Ingredient {
   id        Int       @id @default(autoincrement())
-  name      String    @unique
+  company   Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId Int?
+  name      String
   weightG   Int
   cost      Decimal   @db.Decimal(10,4)
   portions  Portion[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@unique([name])
+  @@index([companyId])
 }
 
 model Snack {
-  id            Int           @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
+  company       Company?       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId     Int?
   name          String
   imageUrl      String?
   snackPortions SnackPortion[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([companyId])
 }
 
 model Portion {
-  id            Int           @id @default(autoincrement())
-  ingredient    Ingredient    @relation(fields: [ingredientId], references: [id])
+  id            Int            @id @default(autoincrement())
+  company       Company?       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId     Int?
+  ingredient    Ingredient     @relation(fields: [ingredientId], references: [id])
   ingredientId  Int
   name          String
   weightG       Int
-  cost          Decimal       @db.Decimal(10,4)
+  cost          Decimal        @db.Decimal(10,4)
   snackPortions SnackPortion[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([ingredientId])
+  @@index([companyId])
 }
 
 model SnackPortion {
