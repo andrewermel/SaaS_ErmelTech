@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handlePrismaError } from "../helpers/errorHandler.js";
+import { handleError } from "../helpers/errorHandler.js";
 import {
   sendValidationError,
   validateNonNegative,
@@ -14,6 +14,7 @@ export const createIngredient = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const { name, weightG, cost } = req.body;
 
   const nameError = validateRequired(name, "Name");
@@ -26,22 +27,24 @@ export const createIngredient = async (
   if (costError) return sendValidationError(costError, res);
 
   try {
-    const ingredient = await ingredientService.create(name, weightG, cost);
+    const ingredient = await ingredientService.create(name, weightG, cost, companyId);
     return res.status(201).json(ingredient);
   } catch (error) {
-    return handlePrismaError(error, res);
+    return handleError(error, "Error creating ingredient.", res);
   }
 };
 
 export const listIngredients = async (
-  _req: Request,
+  req: Request,
   res: Response,
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
+
   try {
-    const ingredients = await ingredientService.findAll();
+    const ingredients = await ingredientService.findAll(companyId);
     return res.json(ingredients);
   } catch (error) {
-    return handlePrismaError(error, res);
+    return handleError(error, "Error fetching ingredients.", res);
   }
 };
 
@@ -49,16 +52,17 @@ export const getIngredient = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const id = req.params.id as string;
 
   if (!id) return res.status(400).json({ error: "Invalid ID." });
 
   try {
-    const ingredient = await ingredientService.findById(parseInt(id));
+    const ingredient = await ingredientService.findById(parseInt(id), companyId);
     if (!ingredient) return res.status(404).json({ error: "Not found." });
     return res.json(ingredient);
   } catch (error) {
-    return handlePrismaError(error, res);
+    return handleError(error, "Error fetching ingredient.", res);
   }
 };
 
@@ -66,6 +70,7 @@ export const updateIngredient = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const id = req.params.id as string;
 
   if (!id) return res.status(400).json({ error: "Invalid ID." });
@@ -87,10 +92,10 @@ export const updateIngredient = async (
       name,
       weightG,
       cost,
-    });
+    }, companyId);
     return res.json(ingredient);
   } catch (error) {
-    return handlePrismaError(error, res);
+    return handleError(error, "Error updating ingredient.", res);
   }
 };
 
@@ -98,14 +103,15 @@ export const deleteIngredient = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const id = req.params.id as string;
 
   if (!id) return res.status(400).json({ error: "Invalid ID." });
 
   try {
-    await ingredientService.delete(parseInt(id));
+    await ingredientService.delete(parseInt(id), companyId);
     return res.json({ message: "Deleted." });
   } catch (error) {
-    return handlePrismaError(error, res);
+    return handleError(error, "Error deleting ingredient.", res);
   }
 };

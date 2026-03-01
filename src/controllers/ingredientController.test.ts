@@ -1,6 +1,11 @@
 import { jest } from '@jest/globals';
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma.js';
+import {
+  createTestTenant,
+  cleanupTestTenant,
+  type TestTenant,
+} from '../tests/helpers/createTestTenant.js';
 
 import {
   createIngredient,
@@ -14,11 +19,24 @@ describe('ingredientController', () => {
   let json: jest.Mock;
   let status: jest.Mock;
   const createdIds: number[] = [];
+  let tenant: TestTenant;
+
+  beforeAll(async () => {
+    tenant = await createTestTenant('ingredient');
+  });
 
   beforeEach(() => {
     json = jest.fn();
     status = jest.fn().mockReturnValue({ json });
-    req = { body: {} };
+    req = {
+      body: {},
+      user: {
+        userId: tenant.userId,
+        email: `test_ingredient@example.com`,
+        companyId: tenant.companyId,
+        role: tenant.role,
+      },
+    };
     res = { status, json } as unknown as Response;
   });
 
@@ -28,6 +46,7 @@ describe('ingredientController', () => {
         where: { id: { in: createdIds } },
       });
     }
+    await cleanupTestTenant(tenant.userId, tenant.companyId);
     await prisma.$disconnect();
   });
 
@@ -67,7 +86,7 @@ describe('ingredientController', () => {
   });
 
   it('listIngredients returns array', async () => {
-    await listIngredients({} as Request, res as Response);
+    await listIngredients(req as Request, res as Response);
 
     expect(status).not.toHaveBeenCalled();
     expect(json).toHaveBeenCalled();

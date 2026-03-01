@@ -2,22 +2,27 @@
 import { Request, Response } from 'express';
 import type { SnackWithTotals } from '../types/entities.js';
 
-// Defina assinaturas de funções sem `any`
+// Defina assinaturas de funções com companyId
 type CreateSnackFn = (
   name: string,
+  companyId: number,
   imageUrl?: string
 ) => Promise<{
   id: number;
   name: string;
   imageUrl: string | null;
+  companyId: number;
   snackPortions: Array<{ portion: object; quantity: number }>;
 }>;
 
-type GetSnackWithTotalsFn = (snackId: number) => Promise<SnackWithTotals | null>;
+type GetSnackWithTotalsFn = (snackId: number, companyId: number) => Promise<SnackWithTotals | null>;
+
+type GetAllSnacksFn = () => Promise<SnackWithTotals[]>;
 
 type AddPortionFn = (
   snackId: number,
-  portionId: number
+  portionId: number,
+  companyId: number
 ) => Promise<{
   id: number;
   snackId: number;
@@ -27,10 +32,11 @@ type AddPortionFn = (
 
 type RemovePortionFn = (
   snackId: number,
-  portionId: number
+  portionId: number,
+  companyId: number
 ) => Promise<{ message: string }>;
 
-type DeleteSnackFn = (snackId: number) => Promise<void>;
+type DeleteSnackFn = (snackId: number, companyId: number) => Promise<void>;
 
 // Mocks corretamente tipados
 const mockCreateSnack = jest.fn<CreateSnackFn>();
@@ -76,7 +82,15 @@ describe('snackController', () => {
     jest.clearAllMocks();
     json = jest.fn();
     status = jest.fn().mockReturnValue({ json });
-    req = { body: {} };
+    req = {
+      body: {},
+      user: {
+        userId: 1,
+        email: 'test@test.com',
+        companyId: 1,
+        role: 'OWNER',
+      },
+    };
     res = { status, json } as unknown as Response;
   });
 
@@ -91,6 +105,7 @@ describe('snackController', () => {
       id: 1,
       name: 'TestSnack',
       imageUrl: null,
+      companyId: 1,
       snackPortions: [],
     });
 
@@ -129,6 +144,7 @@ describe('snackController', () => {
       id: 1,
       name: 'Big Black',
       imageUrl: null,
+      companyId: 1,
       portions: [],
       totalCost: '0.0000',
       totalWeightG: 0,

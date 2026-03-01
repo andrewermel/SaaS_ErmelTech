@@ -41,10 +41,11 @@ const calculateTotals = (
 };
 
 export class SnackService {
-  async createSnack(name: string, imageUrl?: string) {
+  async createSnack(name: string, companyId: number, imageUrl?: string) {
     return prisma.snack.create({
       data: {
         name: name.trim(),
+        companyId,
         imageUrl: imageUrl || null,
       },
       include: {
@@ -54,10 +55,11 @@ export class SnackService {
   }
 
   async getSnackWithTotals(
-    snackId: number
+    snackId: number,
+    companyId: number
   ): Promise<SnackWithTotals | null> {
-    const snack = await prisma.snack.findUnique({
-      where: { id: snackId },
+    const snack = await prisma.snack.findFirst({
+      where: { id: snackId, companyId },
       include: {
         snackPortions: { include: { portion: true } },
       },
@@ -82,6 +84,7 @@ export class SnackService {
       id: snack.id,
       name: snack.name,
       imageUrl: snack.imageUrl,
+      companyId: snack.companyId,
       portions,
       totalCost,
       totalWeightG,
@@ -91,8 +94,9 @@ export class SnackService {
     };
   }
 
-  async getAllSnacks(): Promise<SnackWithTotals[]> {
+  async getAllSnacks(companyId: number): Promise<SnackWithTotals[]> {
     const snacks = await prisma.snack.findMany({
+      where: { companyId },
       include: {
         snackPortions: { include: { portion: true } },
       },
@@ -116,6 +120,7 @@ export class SnackService {
         id: snack.id,
         name: snack.name,
         imageUrl: snack.imageUrl,
+        companyId: snack.companyId,
         portions,
         totalCost,
         totalWeightG,
@@ -126,15 +131,20 @@ export class SnackService {
     });
   }
 
-  async addPortion(snackId: number, portionId: number) {
+  async addPortion(snackId: number, portionId: number, companyId: number) {
     return prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        await tx.snack.findUniqueOrThrow({
-          where: { id: snackId },
+        // Verificar que snack pertence à empresa
+        const snack = await tx.snack.findFirst({
+          where: { id: snackId, companyId },
         });
-        await tx.portion.findUniqueOrThrow({
-          where: { id: portionId },
+        if (!snack) throw new Error('Snack not found.');
+
+        // Verificar que porção pertence à empresa
+        const portion = await tx.portion.findFirst({
+          where: { id: portionId, companyId },
         });
+        if (!portion) throw new Error('Portion not found or does not belong to this company.');
 
         const existing = await tx.snackPortion.findUnique({
           where: {
@@ -160,10 +170,17 @@ export class SnackService {
 
   async removePortion(
     snackId: number,
-    portionId: number
+    portionId: number,
+    companyId: number
   ): Promise<{ message: string }> {
     return prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
+        // Verificar que snack pertence à empresa
+        const snack = await tx.snack.findFirst({
+          where: { id: snackId, companyId },
+        });
+        if (!snack) throw new Error('Snack not found.');
+
         const snackPortion =
           await tx.snackPortion.findUnique({
             where: {
@@ -195,7 +212,12 @@ export class SnackService {
     );
   }
 
-  async deleteSnack(snackId: number) {
+  async deleteSnack(snackId: number, companyId: number) {
+    const existing = await prisma.snack.findFirst({
+      where: { id: snackId, companyId },
+    });
+    if (!existing) throw new Error('Snack not found.');
+
     return prisma.snack.delete({
       where: { id: snackId },
     }) as any;

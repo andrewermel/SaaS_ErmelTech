@@ -28,7 +28,7 @@ export interface Ingredient {
   name: string;
   weightG: number;
   cost: Decimal | string;
-  companyId?: number | null;
+  companyId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,7 +39,7 @@ export interface Portion {
   weightG: number;
   cost: Decimal | string;
   ingredientId: number;
-  companyId?: number | null;
+  companyId: number;
   ingredient?: Ingredient;
   createdAt: Date;
   updatedAt: Date;
@@ -62,7 +62,7 @@ export interface Snack {
   id: number;
   name: string;
   imageUrl?: string | null;
-  companyId?: number | null;
+  companyId: number;
   snackPortions?: SnackPortion[];
   createdAt: Date;
   updatedAt: Date;

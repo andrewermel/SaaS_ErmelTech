@@ -12,6 +12,7 @@ export const createSnack = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const { name, imageUrl } = req.body;
   const file = req.file;
 
@@ -19,13 +20,13 @@ export const createSnack = async (
   if (nameError) return sendValidationError(nameError, res);
 
   try {
-    // Se houver arquivo, usar o caminho do arquivo, senão usar imageUrl
     const finalImageUrl = file
       ? `/uploads/${file.filename}`
       : imageUrl || null;
 
     const snack = await snackService.createSnack(
       name,
+      companyId,
       finalImageUrl
     );
     return res.status(201).json(snack);
@@ -35,11 +36,13 @@ export const createSnack = async (
 };
 
 export const listSnacks = async (
-  _req: Request,
+  req: Request,
   res: Response
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
+
   try {
-    const snacks = await snackService.getAllSnacks();
+    const snacks = await snackService.getAllSnacks(companyId);
     return res.json(snacks);
   } catch (error) {
     return handleError(
@@ -54,6 +57,7 @@ export const getSnack = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const id = req.params.id as string;
 
   if (!id)
@@ -61,7 +65,8 @@ export const getSnack = async (
 
   try {
     const snack = await snackService.getSnackWithTotals(
-      parseInt(id)
+      parseInt(id),
+      companyId
     );
     if (!snack)
       return res.status(404).json({ error: 'Not found.' });
@@ -75,6 +80,7 @@ export const addPortion = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const snackId = req.params.snackId as string;
   const portionId = req.params.portionId as string;
 
@@ -94,7 +100,8 @@ export const addPortion = async (
   try {
     const snackPortion = await snackService.addPortion(
       parseInt(snackId),
-      bodyPortionId
+      bodyPortionId,
+      companyId
     );
     return res.status(201).json(snackPortion);
   } catch (error) {
@@ -106,6 +113,7 @@ export const removePortion = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const snackId = req.params.snackId as string;
   const portionId = req.params.portionId as string;
 
@@ -116,7 +124,8 @@ export const removePortion = async (
   try {
     const result = await snackService.removePortion(
       parseInt(snackId),
-      parseInt(portionId)
+      parseInt(portionId),
+      companyId
     );
     return res.json(result);
   } catch (error) {
@@ -132,13 +141,14 @@ export const deleteSnack = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  const companyId = req.user!.companyId!;
   const id = req.params.id as string;
 
   if (!id)
     return res.status(400).json({ error: 'Invalid ID.' });
 
   try {
-    await snackService.deleteSnack(parseInt(id));
+    await snackService.deleteSnack(parseInt(id), companyId);
     return res.json({ message: 'Deleted.' });
   } catch (error) {
     return handleError(error, 'Error deleting snack.', res);

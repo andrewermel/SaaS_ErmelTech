@@ -7,9 +7,12 @@ import {
   listSnacks,
   removePortion,
 } from '../controllers/snackController.js';
+import { authenticateJWT } from '../middlewares/authenticateJWT.js';
 import { upload } from '../middlewares/upload.js';
 
 const router = Router();
+
+router.use(authenticateJWT);
 
 router.post('/', upload.single('image'), createSnack);
 router.get('/', listSnacks);

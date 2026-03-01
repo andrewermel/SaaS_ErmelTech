@@ -6,8 +6,11 @@ import {
   listPortions,
   updatePortion,
 } from '../controllers/portionController.js';
+import { authenticateJWT } from '../middlewares/authenticateJWT.js';
 
 const router = Router();
+
+router.use(authenticateJWT);
 
 router.post('/', createPortion);
 router.get('/', listPortions);

@@ -6,8 +6,11 @@ import {
   listIngredients,
   updateIngredient,
 } from '../controllers/ingredientController.js';
+import { authenticateJWT } from '../middlewares/authenticateJWT.js';
 
 const router = Router();
+
+router.use(authenticateJWT);
 
 router.post('/', createIngredient);
 router.get('/', listIngredients);
