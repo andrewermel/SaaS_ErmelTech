@@ -1,53 +1,124 @@
-# 🍔 BlackLanches - Sistema de Gestão de Custos para Lanchonete
+# SaaS_ErmelTech — Plataforma SaaS para Gestão de Lanchonetes
 
-<div align="center">
+Este repositório contém a plataforma SaaS para gestão de lanchonetes, projetada para operar em ambiente multi-tenant (cada cliente/empresa tem dados isolados). O projeto já inclui backend em Node.js/TypeScript, frontend em React (Vite) e testes automatizados.
 
-![BlackLanches Logo](https://img.shields.io/badge/BlackLanches-Sistema_de_Gest%C3%A3o-daa520?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Em_Produ%C3%A7%C3%A3o-success?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+Visão rápida:
 
-**Um sistema criado com amor para ajudar famílias empreendedoras a prosperarem** 💛
-
-</div>
-
----
-
-## 📖 A História Por Trás do BlackLanches
-
-Este projeto nasceu de uma necessidade real, em um momento difícil. Após a enchente que atingiu nossa região, minha família precisou recomeçar do zero. Com coragem e determinação, decidiram abrir um pequeno negócio de lanches para sustentar a casa e reconstruir nossas vidas.
-
-Porém, surgiu um desafio: **como saber se estávamos tendo lucro ou prejuízo?** Como calcular o custo real de cada lanche? Quanto cada ingrediente representava no preço final? Essas perguntas nos motivaram a criar algo que pudesse ajudar não só a nossa família, mas todas as famílias empreendedoras que enfrentam desafios semelhantes.
-
-O **BlackLanches** é mais que um sistema - é uma ferramenta de recomeço, de esperança e de organização para quem quer fazer seu negócio crescer de forma sustentável.
+- Multi-tenant: isolamento por `companyId` em todas as queries
+- Autenticação: JWT com claims `userId`, `companyId`, `role`
+- Autorização: middleware RBAC (`OWNER`, `ADMIN`, `EMPLOYEE`)
+- Desenvolvimento e execução por Docker Compose
 
 ---
 
-## 🎯 O Que o BlackLanches Faz?
+## Recursos Principais
 
-O BlackLanches é um sistema completo de gestão de custos para lanchonetes que permite:
-
-### ✨ Funcionalidades Principais
-
-- 📦 **Gestão de Ingredientes**: Cadastre todos os ingredientes com peso e custo
-- 🍽️ **Gestão de Porções**: Crie porções baseadas nos ingredientes (ex: hambúrguer, queijo, pão)
-- 🍔 **Montagem de Lanches**: Monte seus lanches combinando porções
-- 💰 **Cálculo Automático de Custos**: O sistema calcula automaticamente:
-  - Custo total do lanche
-  - Peso total
-  - Preço sugerido de venda (com margem de lucro)
-- 📊 **Visualização Clara**: Interface simples e intuitiva para consultas rápidas
-- 🖼️ **Fotos dos Lanches**: Adicione imagens para facilitar a identificação
-- ✏️ **Edição Fácil**: Edite lanches, porções e ingredientes quando necessário
+- Isolamento multi-tenant por `companyId`
+- Autenticação via JWT e extração de `companyId` no frontend
+- Matriz de permissões (RBAC) aplicada no backend e refletida no frontend (`usePermission`)
+- API documentada em OpenAPI (`Swagger.yaml`)
+- Testes de integração cobrindo isolamento e autorização
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Arquitetura
 
-### Backend
+Estrutura resumida:
 
-- **Node.js** - Ambiente de execução JavaScript
-- **Express** - Framework web rápido e minimalista
-- **TypeScript** - JavaScript com tipagem estática
+```
+├── backend/        # Node.js + TypeScript + Prisma
+├── frontend/       # React + Vite
+├── docker-compose.yml
+├── Dockerfile      # backend
+├── Swagger.yaml    # documentação OpenAPI
+└── prisma/         # migrations + schema
+```
+
+---
+
+## Quickstart (local, Docker)
+
+Pré-requisitos: Docker e Docker Compose instalados.
+
+1) Build e subir os containers:
+
+```bash
+docker compose up --build
+```
+
+2) Rodar em background:
+
+```bash
+docker compose up --build -d
+```
+
+3) Ver logs do backend:
+
+```bash
+docker compose logs -f backend
+```
+
+4) Testes (no container backend):
+
+```bash
+docker compose exec backend npm test
+```
+
+Ports expostas (padrão):
+
+- Backend: http://localhost:3000
+- Frontend: http://localhost:5173
+
+---
+
+## API & Documentação
+
+A documentação OpenAPI está em `Swagger.yaml` neste repositório. Abra em [Swagger UI](https://swagger.io/tools/swagger-ui/) ou importe no Postman/Insomnia.
+
+Pontos importantes:
+
+- Endpoints protegidos exigem header `Authorization: Bearer <token>`
+- O registro (`/auth/register`) agora aceita `companyName` para criar a empresa do cliente
+
+---
+
+## Testes
+
+- Atualmente a suíte de testes automatizados cobre autenticação, controllers e cenários SaaS (isolamento + RBAC).
+- Para executar localmente (via Docker):
+
+```bash
+docker compose exec backend npm test
+```
+
+---
+
+## Contribuição
+
+Pull requests são bem-vindos. Antes de abrir PR, execute os testes e garanta que o `docker compose up --build` funcione localmente.
+
+Sugestões:
+
+- Escreva testes para novas features
+- Documente endpoints adicionados no `Swagger.yaml`
+
+---
+
+## Segurança e Produção
+
+- Troque o `JWT_SECRET` para um valor seguro em produção
+- Use HTTPS e configure variáveis de ambiente via secrets no deploy
+- Configure backups para o banco de dados PostgreSQL
+
+---
+
+## Licença
+
+Este projeto está licenciado sob MIT.
+
+---
+
+Se quiser, ajusto o README com o nome comercial do SaaS e dados de contato/empresa — me diga o nome que deseja exibir.
 - **Prisma ORM** - ORM moderno para PostgreSQL
 - **PostgreSQL** - Banco de dados relacional
 - **JWT** - Autenticação segura
