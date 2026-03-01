@@ -125,4 +125,49 @@ describe('authenticateJWT middleware', () => {
     expect(mockNext).toHaveBeenCalled();
     expect(mockReq.user).toEqual(decodedToken);
   });
+
+  it('should propagate companyId and role from token when present', () => {
+    const decodedToken = {
+      userId: 1,
+      email: 'test@example.com',
+      companyId: 10,
+      role: 'OWNER',
+    };
+    mockReq.headers = {
+      authorization: 'Bearer valid-token-with-company',
+    };
+    verifyMock.mockReturnValue(decodedToken as any);
+
+    authenticateJWT(
+      mockReq as Request,
+      mockRes as Response,
+      mockNext
+    );
+
+    expect(mockNext).toHaveBeenCalled();
+    expect(mockReq.user).toEqual(decodedToken);
+    expect(mockReq.user?.companyId).toBe(10);
+    expect(mockReq.user?.role).toBe('OWNER');
+  });
+
+  it('should leave companyId and role undefined when token has no company', () => {
+    const decodedToken = {
+      userId: 1,
+      email: 'test@example.com',
+    };
+    mockReq.headers = {
+      authorization: 'Bearer valid-token-no-company',
+    };
+    verifyMock.mockReturnValue(decodedToken as any);
+
+    authenticateJWT(
+      mockReq as Request,
+      mockRes as Response,
+      mockNext
+    );
+
+    expect(mockNext).toHaveBeenCalled();
+    expect(mockReq.user?.companyId).toBeUndefined();
+    expect(mockReq.user?.role).toBeUndefined();
+  });
 });
