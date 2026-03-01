@@ -598,6 +598,204 @@ Contribuições são muito bem-vindas! Este projeto foi criado para ajudar famí
 
 ---
 
+## � Arquitetura SaaS - Multi-tenant
+
+### V2.0 - Transformação para SaaS
+
+A partir da **versão 2.0**, BlackLanches evoluiu para uma arquitetura **multi-tenant**. Isto significa que múltiplas lanchonetes podem usar a mesma plataforma simultaneamente, com **isolamento total de dados**.
+
+### Isolamento Multi-tenant
+
+```
+┌─────────────────────────────────────┐
+│      BlackLanches SaaS v2.0         │
+├─────────────────────────────────────┤
+│                                     │
+│  Empresa A          Empresa B        │
+│  (Lanches João)    (Hambúrg Plus)   │
+│                                     │
+│  Seus dados:       Seus dados:      │
+│  ✓ Ingredientes    ✓ Ingredientes   │
+│  ✓ Porções         ✓ Porções        │
+│  ✓ Lanches         ✓ Lanches        │
+│  ✓ Usuários        ✓ Usuários       │
+│                                     │
+│  ✗ Compartilhado: NÃO ✗             │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### Tabela de Relacionamento `UserCompany`
+
+Cada usuário pode ter múltiplos roles em múltiplas empresas:
+
+```
+User: João Silva
+├─ Lanches João (companyId=1) → OWNER
+└─ Hambúrg Plus (companyId=2) → ADMIN
+```
+
+### Matriz de Permissões (RBAC)
+
+| Role | Criar | Editar | Deletar | Ler |
+|------|-------|--------|---------|-----|
+| **OWNER** | ✅ | ✅ | ✅ | ✅ |
+| **ADMIN** | ✅ | ✅ | ❌ | ✅ |
+| **EMPLOYEE** | ❌ | ❌ | ❌ | ✅ |
+
+### Schema de Multi-tenancy
+
+Todas as tabelas de dados têm uma coluna `companyId` que garante isolamento:
+
+```typescript
+// Ingrediente
+model Ingredient {
+  id        Int      @id @default(autoincrement())
+  name      String
+  weightG   Decimal
+  cost      Decimal
+  companyId Int      @not_null  // 🔒 Isolamento
+  company   Company  @relation(fields: [companyId], references: [id])
+  @@index([companyId])           // 🚀 Performance
+}
+```
+
+### Fluxo de Autenticação SaaS
+
+```
+1. REGISTRO
+   └─ /auth/register
+      └─ name, email, password, companyName
+      └─ Cria: User + Company + UserCompany(role=OWNER)
+
+2. LOGIN
+   └─ /auth/login
+      └─ email, password
+      └─ Retorna JWT com: userId, email, companyId, role
+
+3. ACESSO À API
+   └─ Header: Authorization: Bearer <token>
+   └─ Backend valida: Token + companyId + role
+   └─ Middleware authorizeRole verifica permissões
+
+4. ISOLAMENTO
+   └─ Service filtra por companyId
+   └─ Nenhum dado de outrem é acessível
+```
+
+### Testes de Multi-tenancy
+
+✅ **39 testes passando**, incluindo:
+
+#### Isolamento de Dados (Fase 7.1)
+```
+✓ TenantB não vê ingredientes de TenantA na lista
+✓ TenantA vê seu próprio ingrediente
+✓ TenantB não consegue deletar ingrediente de TenantA (404)
+```
+
+#### Autorização por Role (Fase 7.2)
+```
+✓ OWNER passa em autorização para CREATE
+✓ ADMIN passa em autorização para CREATE
+✓ EMPLOYEE recebe 403 para CREATE
+✓ OWNER passa em autorização para DELETE
+✓ ADMIN recebe 403 para DELETE
+✓ EMPLOYEE recebe 403 para DELETE
+```
+
+### Segurança
+
+- ✅ Dados filtrados por `companyId` em TODAS as queries
+- ✅ JWT contém `companyId` para validação
+- ✅ Middleware `authorizeRole` valida permissões
+- ✅ Testes de isolamento executados automaticamente
+- ⚠️ JWT_SECRET deve ser seguro e rotacionado regulamente
+- ⚠️ HTTPS obrigatório em produção
+
+### Escalabilidade
+
+A arquitetura multi-tenant permite:
+- Múltiplas empresas em uma instância
+- Dados persistidos em PostgreSQL 16
+- Índices em `companyId` para otimizar queries
+- Fácil adição de novos tenants sem deploy
+
+---
+
+## 📚 Documentação OpenAPI (Swagger)
+
+Veja o arquivo `Swagger.yaml` para documentação completa da API. A documentação inclui:
+
+- Todos os endpoints
+- Schemas de request/response
+- Exemplos de uso
+- Códigos de status HTTP
+- Autenticação Bearer JWT
+
+Abra em Swagger UI, Postman ou Insomnia para visualizar interativamente.
+
+---
+
+## 💻 Frontend SaaS
+
+### Autenticação + JWT Decode
+
+```javascript
+// AuthContext.jsx
+import { jwtDecode } from 'jwt-decode';
+
+const login = async (email, password) => {
+  const data = await api.post('/auth/login', { email, password });
+  localStorage.setItem('token', data.token);
+
+  // Decodificar JWT para extrair companyId + role
+  const decoded = jwtDecode(data.token);
+  setUser({
+    userId: decoded.userId,
+    email: decoded.email,
+    companyId: decoded.companyId,
+    role: decoded.role,
+  });
+};
+```
+
+### Hook usePermission()
+
+```javascript
+// hooks/usePermission.js
+export function usePermission() {
+  const { user } = useAuth();
+
+  return {
+    canCreate: ['OWNER', 'ADMIN'].includes(user?.role),
+    canEdit:   ['OWNER', 'ADMIN'].includes(user?.role),
+    canDelete: user?.role === 'OWNER',
+  };
+}
+
+// Uso nos componentes
+const { canCreate, canDelete } = usePermission();
+{canCreate && <button>Novo Ingrediente</button>}
+{canDelete && <button>Deletar</button>}
+```
+
+### Header com Info da Empresa
+
+```javascript
+// App.jsx
+{isAuthenticated && user && (
+  <div className="header-info">
+    <span className="company-info">
+      🏢 {user.companyId}
+      <span className="role-badge">{user.role}</span>
+    </span>
+  </div>
+)}
+```
+
+---
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
@@ -624,6 +822,7 @@ Se você tem dúvidas, sugestões ou quer compartilhar sua história de uso do B
 
 ![Família](https://img.shields.io/badge/Para_Fam%C3%ADlias-Empreendedoras-daa520?style=for-the-badge)
 ![Recomeço](https://img.shields.io/badge/Recomeço-Sempre_Possível-success?style=for-the-badge)
+![SaaS](https://img.shields.io/badge/SaaS-Multi_Tenant-success?style=for-the-badge)
 
 ⭐ Se este projeto ajudou você, considere dar uma estrela!
 
@@ -631,7 +830,6 @@ Se você tem dúvidas, sugestões ou quer compartilhar sua história de uso do B
 
 ---
 
-**Última atualização**: 13 de fevereiro de 2026  
-**Versão**: 2.0.0  
-**Prisma**: 6.19.2  
-**Node**: 18.0.0+
+**Última atualização**: 01 de março de 2026  
+**Versão**: 2.0.0 (SaaS)  
+**Testes**: 39 ✅ | Arquitetura: Multi-tenant ✅

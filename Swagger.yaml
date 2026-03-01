@@ -1,0 +1,516 @@
+openapi: 3.0.0
+info:
+  title: BlackLanches SaaS API
+  description: API REST para gerenciamento multi-tenant de lanchonetes
+  version: 1.0.0
+  contact:
+    name: BlackLanches Support
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Desenvolvimento
+  - url: https://api.blacklanches.com/api/v1
+    description: Produção
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtido no login
+
+  schemas:
+    Company:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - createdAt
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Lanches do João"
+        slug:
+          type: string
+          example: "lanches-joao"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-03-01T12:00:00Z"
+
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "João Silva"
+        email:
+          type: string
+          format: email
+          example: "joao@lanches.com"
+        createdAt:
+          type: string
+          format: date-time
+
+    Ingredient:
+      type: object
+      required:
+        - id
+        - name
+        - weightG
+        - cost
+        - companyId
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Pão de Hambúrguer"
+        weightG:
+          type: number
+          example: 50
+        cost:
+          type: number
+          example: 0.50
+        companyId:
+          type: integer
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+
+    Portion:
+      type: object
+      required:
+        - id
+        - name
+        - quantity
+        - unit
+        - cost
+        - companyId
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Porção de Queijo"
+        quantity:
+          type: number
+          example: 2
+        unit:
+          type: string
+          enum: [g, ml, un]
+          example: "un"
+        cost:
+          type: number
+          example: 1.50
+        companyId:
+          type: integer
+          example: 1
+
+    Snack:
+      type: object
+      required:
+        - id
+        - name
+        - price
+        - companyId
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Hambúrguer Básico"
+        price:
+          type: number
+          example: 15.00
+        companyId:
+          type: integer
+          example: 1
+        portions:
+          type: array
+          items:
+            type: object
+            properties:
+              portionId:
+                type: integer
+              quantity:
+                type: number
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        user:
+          type: object
+          properties:
+            userId:
+              type: integer
+            email:
+              type: string
+            companyId:
+              type: integer
+            role:
+              type: string
+              enum: [OWNER, ADMIN, EMPLOYEE]
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Mensagem de erro"
+
+security:
+  - BearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Autenticação
+      summary: Registrar novo usuário com empresa
+      description: Cria um novo usuário e uma empresa associada
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - companyName
+              properties:
+                name:
+                  type: string
+                  example: "João Silva"
+                email:
+                  type: string
+                  format: email
+                  example: "joao@email.com"
+                password:
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: "senha123"
+                companyName:
+                  type: string
+                  example: "Lanches do João"
+      responses:
+        201:
+          description: Usuário registrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        400:
+          description: Validação falhou
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags:
+        - Autenticação
+      summary: Fazer login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        200:
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        401:
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/me:
+    get:
+      tags:
+        - Autenticação
+      summary: Obter dados do usuário autenticado
+      responses:
+        200:
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+
+  /companies/{id}:
+    get:
+      tags:
+        - Empresas
+      summary: Obter dados da empresa
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Empresa encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        404:
+          description: Empresa não encontrada
+
+  /ingredients:
+    get:
+      tags:
+        - Ingredientes
+      summary: Listar ingredientes da empresa (TODOS)
+      responses:
+        200:
+          description: Lista de ingredientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+
+    post:
+      tags:
+        - Ingredientes
+      summary: Criar ingrediente (OWNER, ADMIN)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - weightG
+                - cost
+              properties:
+                name:
+                  type: string
+                weightG:
+                  type: number
+                cost:
+                  type: number
+      responses:
+        201:
+          description: Ingrediente criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        403:
+          description: Permissão negada (apenas OWNER/ADMIN)
+
+  /ingredients/{id}:
+    get:
+      tags:
+        - Ingredientes
+      summary: Obter um ingrediente (TODOS)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ingrediente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+        404:
+          description: Ingrediente não encontrado
+
+    put:
+      tags:
+        - Ingredientes
+      summary: Atualizar ingrediente (OWNER, ADMIN)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                weightG:
+                  type: number
+                cost:
+                  type: number
+      responses:
+        200:
+          description: Ingrediente atualizado
+        403:
+          description: Permissão negada
+
+    delete:
+      tags:
+        - Ingredientes
+      summary: Deletar ingrediente (OWNER)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ingrediente deletado
+        403:
+          description: Apenas OWNER pode deletar
+        404:
+          description: Ingrediente não encontrado
+
+  /portions:
+    get:
+      tags:
+        - Porções
+      summary: Listar porções (TODOS)
+      responses:
+        200:
+          description: Lista de porções
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portion'
+
+    post:
+      tags:
+        - Porções
+      summary: Criar porção (OWNER, ADMIN)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - quantity
+                - unit
+                - cost
+              properties:
+                name:
+                  type: string
+                quantity:
+                  type: number
+                unit:
+                  type: string
+                  enum: [g, ml, un]
+                cost:
+                  type: number
+      responses:
+        201:
+          description: Porção criada
+        403:
+          description: Permissão negada
+
+  /snacks:
+    get:
+      tags:
+        - Lanches
+      summary: Listar lanches (TODOS)
+      responses:
+        200:
+          description: Lista de lanches
+
+    post:
+      tags:
+        - Lanches
+      summary: Criar lanche (OWNER, ADMIN)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - price
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+      responses:
+        201:
+          description: Lanche criado
+        403:
+          description: Permissão negada
+
+    delete:
+      tags:
+        - Lanches
+      summary: Deletar lanche (OWNER)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lanche deletado
+        403:
+          description: Apenas OWNER pode deletar
