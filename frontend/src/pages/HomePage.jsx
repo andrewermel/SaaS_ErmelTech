@@ -42,6 +42,18 @@ export default function HomePage() {
           </a>
         </div>
 
+        {user?.companySlug && (
+          <div className="menu-card">
+            <h3>🌐 Cardápio Público</h3>
+            <p>
+              Visualize seu cardápio como os clientes veem
+            </p>
+            <a href={`/#/menu/${user.companySlug}`}>
+              <button>Visualizar</button>
+            </a>
+          </div>
+        )}
+
         <button className="logout-btn" onClick={logout}>
           Sair
         </button>

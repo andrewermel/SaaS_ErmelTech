@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
         email: decoded.email,
         companyId: decoded.companyId,
         companyName: decoded.companyName,
+        companySlug: decoded.companySlug,
         role: decoded.role,
       };
       setUser(userData);
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }) => {
       email: decoded.email,
       companyId: decoded.companyId,
       companyName: decoded.companyName,
+      companySlug: decoded.companySlug,
       role: decoded.role,
     };
     setUser(userData);

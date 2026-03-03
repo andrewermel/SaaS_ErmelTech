@@ -32,6 +32,8 @@ export default function SnackPage() {
 
   const [snackName, setSnackName] = useState('');
   const [snackImage, setSnackImage] = useState(null);
+  const [snackFinalPrice, setSnackFinalPrice] =
+    useState('');
   const [selectedSnack, setSelectedSnack] = useState(null);
   const [selectedPortionId, setSelectedPortionId] =
     useState('');
@@ -84,6 +86,7 @@ export default function SnackPage() {
     try {
       const formData = new FormData();
       formData.append('name', snackName.trim());
+      formData.append('finalPrice', snackFinalPrice || '');
 
       if (snackImage) {
         if (typeof snackImage === 'string') {
@@ -110,6 +113,7 @@ export default function SnackPage() {
 
       setSnackName('');
       setSnackImage(null);
+      setSnackFinalPrice('');
       setPortionsToAdd([]);
       await fetchAll();
     } catch (err) {
@@ -124,6 +128,7 @@ export default function SnackPage() {
     setEditingSnackId(snack.id);
     setSnackName(snack.name);
     setSnackImage(snack.imageUrl);
+    setSnackFinalPrice(snack.finalPrice || '');
     // Carregar porções se já existirem
     if (snack.portions && snack.portions.length > 0) {
       setPortionsToAdd(snack.portions);
@@ -136,6 +141,7 @@ export default function SnackPage() {
     setEditingSnackId(null);
     setSnackName('');
     setSnackImage(null);
+    setSnackFinalPrice('');
     setPortionsToAdd([]);
     setActionError('');
   };
@@ -308,6 +314,20 @@ export default function SnackPage() {
           label="Imagem do Lanche (opcional)"
           error={actionError}
         />
+
+        <div className="form-row">
+          <Input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Preço final (deixe em branco para usar o preço sugerido)"
+            value={snackFinalPrice}
+            onChange={e =>
+              setSnackFinalPrice(e.target.value)
+            }
+            label="Preço Final (Opcional)"
+          />
+        </div>
 
         {portions && portions.length > 0 ? (
           <>

@@ -6,6 +6,7 @@ export const ROUTES = {
   PORTIONS: '#/portions',
   SNACKS: '#/snacks',
   MEMBERS: '#/members',
+  MENU: '#/menu/:companySlug',
 };
 
 export const API_BASE_URL = 'http://localhost:3000';
@@ -19,6 +20,9 @@ export const API_ENDPOINTS = {
   INGREDIENTS: '/api/v1/ingredients',
   PORTIONS: '/api/v1/portions',
   SNACKS: '/api/v1/snacks',
+  PUBLIC: {
+    MENU: '/api/v1/public/menu',
+  },
 };
 
 export const STORAGE_KEYS = {

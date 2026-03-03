@@ -41,13 +41,24 @@ const calculateTotals = (
 };
 
 export class SnackService {
-  async createSnack(name: string, companyId: number, imageUrl?: string) {
+  async createSnack(
+    name: string,
+    companyId: number,
+    imageUrl?: string,
+    finalPrice?: number | null
+  ) {
+    const data: any = {
+      name: name.trim(),
+      companyId,
+      imageUrl: imageUrl || null,
+    };
+
+    if (finalPrice) {
+      data.finalPrice = new Decimal(finalPrice);
+    }
+
     return prisma.snack.create({
-      data: {
-        name: name.trim(),
-        companyId,
-        imageUrl: imageUrl || null,
-      },
+      data,
       include: {
         snackPortions: { include: { portion: true } },
       },
@@ -94,7 +105,9 @@ export class SnackService {
     };
   }
 
-  async getAllSnacks(companyId: number): Promise<SnackWithTotals[]> {
+  async getAllSnacks(
+    companyId: number
+  ): Promise<SnackWithTotals[]> {
     const snacks = await prisma.snack.findMany({
       where: { companyId },
       include: {
@@ -131,7 +144,11 @@ export class SnackService {
     });
   }
 
-  async addPortion(snackId: number, portionId: number, companyId: number) {
+  async addPortion(
+    snackId: number,
+    portionId: number,
+    companyId: number
+  ) {
     return prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
         // Verificar que snack pertence à empresa
@@ -144,7 +161,10 @@ export class SnackService {
         const portion = await tx.portion.findFirst({
           where: { id: portionId, companyId },
         });
-        if (!portion) throw new Error('Portion not found or does not belong to this company.');
+        if (!portion)
+          throw new Error(
+            'Portion not found or does not belong to this company.'
+          );
 
         const existing = await tx.snackPortion.findUnique({
           where: {
@@ -221,5 +241,50 @@ export class SnackService {
     return prisma.snack.delete({
       where: { id: snackId },
     }) as any;
+  }
+
+  // PUBLIC: Get menu by company slug
+  async getPublicMenu(companySlug: string) {
+    const company = await prisma.company.findUnique({
+      where: { slug: companySlug },
+    });
+
+    if (!company) return null;
+
+    const snacks = await prisma.snack.findMany({
+      where: { companyId: company.id },
+      include: {
+        snackPortions: { include: { portion: true } },
+      },
+    });
+
+    return {
+      company: {
+        id: company.id,
+        name: company.name,
+        slug: company.slug,
+      },
+      snacks: snacks.map((snack: any) => {
+        const { totalCost, totalWeightG, suggestedPrice } =
+          calculateTotals(
+            snack.snackPortions.map((sp: any) => ({
+              portion: sp.portion as Portion,
+              quantity: sp.quantity,
+            }))
+          );
+
+        return {
+          id: snack.id,
+          name: snack.name,
+          imageUrl: snack.imageUrl,
+          finalPrice: snack.finalPrice
+            ? snack.finalPrice.toString()
+            : null,
+          suggestedPrice,
+          totalCost,
+          totalWeightG,
+        };
+      }),
+    };
   }
 }

@@ -75,7 +75,7 @@ export const login = async (
       orderBy: { createdAt: 'desc' },
       include: {
         company: {
-          select: { id: true, name: true },
+          select: { id: true, name: true, slug: true },
         },
       },
     });
@@ -83,6 +83,7 @@ export const login = async (
     if (userCompany) {
       jwtPayload.companyId = userCompany.companyId;
       jwtPayload.companyName = userCompany.company.name;
+      jwtPayload.companySlug = userCompany.company.slug;
       jwtPayload.role = userCompany.role;
     }
 

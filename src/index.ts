@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import ingredientRoutes from './routes/ingredientRoutes.js';
 import portionRoutes from './routes/portionRoutes.js';
+import publicRoutes from './routes/publicRoutes.js';
 import snackRoutes from './routes/snackRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
@@ -35,6 +36,9 @@ app.use(
   '/uploads',
   express.static(path.join(__dirname, '../public/uploads'))
 );
+
+// Public Routes (no authentication)
+app.use('/api/v1/public', publicRoutes);
 
 app.use('/api/v1/auth', authRoutes);
 app.use(

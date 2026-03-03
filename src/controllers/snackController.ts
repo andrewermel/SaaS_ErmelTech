@@ -8,12 +8,43 @@ import { SnackService } from '../services/snackService.js';
 
 const snackService = new SnackService();
 
+// PUBLIC: Get menu by company slug (no authentication required)
+export const getPublicMenu = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { companySlug } = req.params as {
+    companySlug: string;
+  };
+
+  const slugError = validateRequired(
+    companySlug,
+    'Company slug'
+  );
+  if (slugError) return sendValidationError(slugError, res);
+
+  try {
+    const menu =
+      await snackService.getPublicMenu(companySlug);
+
+    if (!menu) {
+      return res
+        .status(404)
+        .json({ error: 'Company not found.' });
+    }
+
+    return res.json(menu);
+  } catch (error) {
+    return handleError(error, 'Error fetching menu.', res);
+  }
+};
+
 export const createSnack = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   const companyId = req.user!.companyId!;
-  const { name, imageUrl } = req.body;
+  const { name, imageUrl, finalPrice } = req.body;
   const file = req.file;
 
   const nameError = validateRequired(name, 'Name');
@@ -27,7 +58,8 @@ export const createSnack = async (
     const snack = await snackService.createSnack(
       name,
       companyId,
-      finalImageUrl
+      finalImageUrl,
+      finalPrice ? parseFloat(String(finalPrice)) : null
     );
     return res.status(201).json(snack);
   } catch (error) {
@@ -42,7 +74,8 @@ export const listSnacks = async (
   const companyId = req.user!.companyId!;
 
   try {
-    const snacks = await snackService.getAllSnacks(companyId);
+    const snacks =
+      await snackService.getAllSnacks(companyId);
     return res.json(snacks);
   } catch (error) {
     return handleError(

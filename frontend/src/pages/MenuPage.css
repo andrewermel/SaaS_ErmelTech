@@ -1,0 +1,218 @@
+/* ============================================
+   CARDÁPIO PÚBLICO
+   Prefixo: cardapio- (evita conflito com HomePage)
+   Tema: igual ao sistema (fundo preto, dourado)
+   ============================================ */
+
+/* ---- Container principal ---- */
+.cardapio-container {
+  background-color: #000000;
+  color: #e0e0e0;
+}
+
+/* ---- Título da seção ---- */
+.cardapio-titulo {
+  margin-bottom: 24px;
+}
+
+.cardapio-titulo h2 {
+  color: #daa520;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  border-bottom: 2px solid #333;
+  padding-bottom: 12px;
+}
+
+/* ---- Área dos cards ---- */
+.cardapio-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 36px 20px 30px;
+}
+
+/* ---- Grid de cards ---- */
+.cardapio-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(220px, 1fr)
+  );
+  gap: 20px;
+  align-items: start; /* Cada card tem altura própria, sem esticar */
+}
+
+/* ---- Card ---- */
+.cardapio-card {
+  background-color: #1a1a1a;
+  border: 2px solid #333333;
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  /* SEM height: 100% — cresce só até o conteúdo */
+}
+
+.cardapio-card:hover {
+  border-color: #daa520;
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.2);
+  transform: translateY(-3px);
+}
+
+/* ---- Imagem ---- */
+.cardapio-card-image {
+  width: 100%;
+  height: 200px;
+  background-color: #2d2d2d;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardapio-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.cardapio-card:hover .cardapio-card-image img {
+  transform: scale(1.05);
+}
+
+.cardapio-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #2d2d2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+}
+
+/* ---- Conteúdo do card (sem flex: 1) ---- */
+.cardapio-card-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardapio-card-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+/* ---- Preço ---- */
+.cardapio-card-footer {
+  border-top: 1px solid #333333;
+  padding-top: 10px;
+  text-align: center;
+}
+
+.cardapio-card-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #daa520;
+}
+
+/* ---- Estados de erro / vazio ---- */
+.cardapio-error-container,
+.cardapio-empty-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+}
+
+.cardapio-error-content,
+.cardapio-empty-content {
+  background-color: #1a1a1a;
+  border: 2px solid #daa520;
+  padding: 36px 28px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 480px;
+  box-shadow: 0 8px 25px rgba(218, 165, 32, 0.4);
+}
+
+.cardapio-error-content h1,
+.cardapio-empty-content h1 {
+  margin: 0 0 12px 0;
+  font-size: 1.8rem;
+  color: #daa520;
+}
+
+.cardapio-error-content p,
+.cardapio-empty-content p {
+  margin: 0 0 10px 0;
+  color: #b0b0b0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.cardapio-error-hint {
+  font-size: 0.88rem;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+/* ---- Responsivo ---- */
+@media (max-width: 768px) {
+  .cardapio-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .cardapio-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(160px, 1fr)
+    );
+    gap: 14px;
+  }
+
+  .cardapio-content {
+    padding: 20px 14px;
+  }
+
+  .cardapio-card-image {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardapio-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .cardapio-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(140px, 1fr)
+    );
+    gap: 12px;
+  }
+
+  .cardapio-content {
+    padding: 16px 10px;
+  }
+
+  .cardapio-card-image {
+    height: 140px;
+  }
+
+  .cardapio-card-price {
+    font-size: 1rem;
+  }
+}

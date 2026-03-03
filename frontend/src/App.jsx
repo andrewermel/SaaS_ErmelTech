@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage.jsx';
 import IngredientPage from './pages/IngredientPage.jsx';
 import Login from './pages/Login.jsx';
 import MembersPage from './pages/MembersPage.jsx';
+import MenuPage from './pages/MenuPage.jsx';
 import PortionPage from './pages/PortionPage.jsx';
 import Register from './pages/Register.jsx';
 import SnackPage from './pages/SnackPage.jsx';
@@ -19,9 +20,19 @@ function AppContent() {
     useAuth();
   const [route, setRoute] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuCompanySlug, setMenuCompanySlug] =
+    useState('');
+  const [menuKey, setMenuKey] = useState(0);
+
+  // Check if current route is a public menu page
+  // (mantido para uso futuro)
 
   useEffect(() => {
     const hash = window.location.hash || '';
+    // Extrai slug se já estiver em rota de cardápio ao carregar
+    if (hash.startsWith('#/menu/')) {
+      setMenuCompanySlug(hash.replace('#/menu/', ''));
+    }
     if (isAuthenticated && !hash) {
       window.location.hash = ROUTES.SNACKS;
       setRoute(ROUTES.SNACKS);
@@ -37,7 +48,14 @@ function AppContent() {
     const handleHashChange = () => {
       const hash = window.location.hash || ROUTES.LOGIN;
 
-      // Redireciona para login se não autenticado e tenta acessar rota protegida
+      // Extrai slug se for rota de cardápio
+      if (hash.startsWith('#/menu/')) {
+        const slug = hash.replace('#/menu/', '');
+        setMenuCompanySlug(slug);
+        setMenuKey(k => k + 1); // força remount e refetch
+      }
+
+      // Redireciona para login se não autenticado
       const publicRoutes = [ROUTES.LOGIN, ROUTES.REGISTER];
       if (
         !isAuthenticated &&
@@ -155,6 +173,19 @@ function AppContent() {
                   👥 Gerenciar Membros
                 </a>
               )}
+              {(user?.role === 'OWNER' ||
+                user?.role === 'ADMIN') && (
+                <a
+                  href={
+                    user?.companySlug
+                      ? `/#/menu/${user.companySlug}`
+                      : ROUTES.HOME
+                  }
+                  onClick={closeMenu}
+                >
+                  🌐 Cardápio
+                </a>
+              )}
             </>
           )}
         </nav>
@@ -181,6 +212,17 @@ function AppContent() {
           <PortionPage />
         ) : route === ROUTES.MEMBERS ? (
           <MembersPage />
+        ) : route.startsWith('#/menu/') &&
+          (user?.role === 'OWNER' ||
+            user?.role === 'ADMIN') ? (
+          <MenuPage
+            key={menuKey}
+            companySlug={
+              menuCompanySlug || user?.companySlug
+            }
+          />
+        ) : route.startsWith('#/menu/') ? (
+          <HomePage />
         ) : (
           <SnackPage />
         )}
