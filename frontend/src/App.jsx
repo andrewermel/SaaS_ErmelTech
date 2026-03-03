@@ -87,13 +87,14 @@ function AppContent() {
           <span></span>
           <span></span>
         </button>
-        <h1 className="title">BlackLanches</h1>
+        <h1 className="title">
+          {isAuthenticated && user?.companyName
+            ? user.companyName
+            : 'ErmelTech'}
+        </h1>
         {isAuthenticated && user && (
           <div className="header-info">
             <span className="company-info">
-              {user.companyId && (
-                <span>🏢 {user.companyId}</span>
-              )}
               {user.role && (
                 <span className="role-badge">
                   {user.role}

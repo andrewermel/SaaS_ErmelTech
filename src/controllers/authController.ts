@@ -73,10 +73,16 @@ export const login = async (
     const userCompany = await prisma.userCompany.findFirst({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
+      include: {
+        company: {
+          select: { id: true, name: true },
+        },
+      },
     });
 
     if (userCompany) {
       jwtPayload.companyId = userCompany.companyId;
+      jwtPayload.companyName = userCompany.company.name;
       jwtPayload.role = userCompany.role;
     }
 

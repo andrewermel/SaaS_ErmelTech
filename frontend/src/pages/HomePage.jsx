@@ -7,7 +7,7 @@ export default function HomePage() {
 
   return (
     <div className="card home-container">
-      <h2>BlackLanches</h2>
+      <h2>{user?.companyName || 'ErmelTech'}</h2>
 
       {user && (
         <div className="welcome-section">
