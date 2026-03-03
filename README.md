@@ -24,6 +24,7 @@ docker compose up --build -d
 - **Frontend**: http://localhost:5173
 - **Backend**: http://localhost:3000
 - **Swagger**: http://localhost:3000/api-docs
+  > Para rodar os testes localmente, veja a seção [🧪 Testes](#-testes) abaixo.
 
 ---
 
@@ -237,32 +238,36 @@ Middleware `authorizeRole()` em cada rota protegida garante que apenas usuários
 
 ```
 SaaS_ErmelTech/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/       # Validação + orquestração
-│   │   ├── services/          # Lógica de negócio
-│   │   ├── routes/            # Definição de endpoints
-│   │   ├── middlewares/       # JWT + RBAC
-│   │   ├── helpers/           # Validações reutilizáveis
-│   │   ├── tests/             # Testes de integração
-│   │   └── index.ts           # Express app
-│   ├── prisma/
-│   │   ├── schema.prisma      # Modelos (Company, User, Ingrediente, etc)
-│   │   └── migrations/        # Histórico de mudanças no BD
-│   ├── Dockerfile
-│   └── package.json
+├── src/                           # Backend (Node.js + TypeScript)
+│   ├── controllers/               # Validação + orquestração
+│   ├── services/                  # Lógica de negócio
+│   ├── routes/                    # Definição de endpoints
+│   ├── middlewares/               # JWT + RBAC
+│   ├── helpers/                   # Validações reutilizáveis
+│   ├── tests/                     # Testes de integração
+│   │   └── helpers/               # createTestTenant, etc
+│   ├── lib/                       # Prisma client singleton
+│   └── index.ts                   # Express app
+│
+├── prisma/
+│   ├── schema.prisma              # Modelos (Company, User, Snack, etc)
+│   └── migrations/                # Histórico de mudanças no BD
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── contexts/          # AuthContext (JWT, companyId, role)
-│   │   ├── pages/             # Register, Login, Dashboard
-│   │   ├── components/        # UI reutilizável
-│   │   ├── hooks/             # usePermission (verifica role)
-│   │   └── services/          # Chamadas à API
+│   │   ├── contexts/              # AuthContext (JWT, companyId, role)
+│   │   ├── pages/                 # Register, Login, Dashboard, MenuPage
+│   │   ├── components/            # UI reutilizável
+│   │   ├── hooks/                 # usePermission (verifica role)
+│   │   └── services/              # Chamadas à API
 │   └── package.json
 │
-├── docker-compose.yml         # Postgres, Backend, Frontend
-├── Swagger.yaml               # Documentação OpenAPI
+├── public/uploads/                # Imagens dos lanches
+├── Dockerfile                     # Backend container
+├── docker-compose.yml             # Postgres + Postgres-test + Backend + Frontend
+├── jest.config.cjs                # Configuração de testes (carrega .env.test)
+├── .env.test                      # Variáveis para testes locais (não commitado)
+├── Swagger.yaml                   # Documentação OpenAPI
 └── README.md
 ```
 
@@ -318,25 +323,44 @@ snackId, portionId, quantity
 
 ## 🧪 Testes
 
-Cobertura completa de isolamento multi-tenant e RBAC:
+Cobertura completa de isolamento multi-tenant e RBAC.
+
+> Os testes de integração usam um banco PostgreSQL **dedicado e separado** (`postgres-test` na porta 5433), para nunca contaminar os dados de desenvolvimento.
+
+### Primeira vez (setup)
 
 ```bash
-# Via Docker
-docker compose exec backend npm test
+# Sobe o banco de teste e aplica todas as migrations
+npm run test:setup
+```
 
-# Ou localmente (sem Docker)
+### Execução diária (Docker já rodando)
+
+```bash
 npm test
+```
+
+### Variáveis de ambiente para testes
+
+O arquivo `.env.test` (criado localmente, não commitado) configura a conexão com o banco de teste:
+
+```env
+DATABASE_URL=postgresql://test:test@localhost:5433/test_db
+JWT_SECRET=test-secret-key-for-ci
+NODE_ENV=test
 ```
 
 **Testes incluem:**
 
 - ✅ Autenticação (login, registro)
-- ✅ Isolamento de dados por `companyId`
-- ✅ Verificação de permissões (RBAC)
+- ✅ Isolamento de dados por `companyId` (multi-tenant)
+- ✅ Verificação de permissões por role (RBAC)
 - ✅ CRUD de ingredientes, porções, lanches
 - ✅ Cálculo de custos
 
 Resultado esperado: **39 testes passando**
+
+> **CI/CD**: o pipeline do GitHub Actions sobe automaticamente um PostgreSQL de serviço para os testes — nenhuma configuração extra necessária.
 
 ---
 
@@ -398,13 +422,21 @@ cd ..
 
 #### 2. Configure ambiente
 
-Crie `.env` na raiz:
+Crie `.env` na raiz (desenvolvimento):
 
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/saas_ermeltech"
 JWT_SECRET="sua_chave_super_segura_aqui_mude_em_producao"
 PORT=3000
 NODE_ENV=development
+```
+
+Crie `.env.test` na raiz (testes — aponta para banco separado):
+
+```env
+DATABASE_URL=postgresql://test:test@localhost:5433/test_db
+JWT_SECRET=test-secret-key-for-ci
+NODE_ENV=test
 ```
 
 #### 3. Configure o banco de dados

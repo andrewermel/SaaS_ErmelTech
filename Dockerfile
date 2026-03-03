@@ -23,6 +23,3 @@ CMD ["/app/backend/entrypoint.sh"]
 
 # 📍 Expõe a porta do servidor
 EXPOSE 3000
-
-# 📍 Expõe a porta do servidor
-EXPOSE 3000

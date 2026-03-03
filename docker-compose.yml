@@ -66,9 +66,31 @@ services:
     networks:
       - blacklanches-network
 
+  # 🧪 PostgreSQL dedicado para testes (porta 5433 no host)
+  # Separado do banco de desenvolvimento para não contaminar dados
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: saas_ermeltech-postgres-test
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U test -d test_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - blacklanches-network
+
 # 📊 Volumes persistentes
 volumes:
   postgres_data:
+  postgres_test_data:
 
 # 🌐 Network para comunicação entre containers
 networks:

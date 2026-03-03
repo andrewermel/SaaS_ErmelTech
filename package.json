@@ -6,6 +6,8 @@
   "scripts": {
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
     "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --watch",
+    "test:setup": "docker compose up -d postgres-test && npx cross-env DATABASE_URL=postgresql://test:test@localhost:5433/test_db prisma migrate deploy",
+    "test:ci": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --forceExit",
     "lint": "echo '⚠️  ESLint para TypeScript requer configuração adicional. Usando TypeScript check...' && npx tsc --noEmit",
     "dev": "node --loader ts-node/esm src/index.ts",
     "dev:all": "concurrently \"npm run dev\" \"npm --prefix frontend run dev\""
