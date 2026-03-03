@@ -20,8 +20,9 @@ docker compose up --build -d
 ```
 
 **URLs:**
+
 - **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:3000  
+- **Backend**: http://localhost:3000
 - **Swagger**: http://localhost:3000/api-docs
 
 ---
@@ -42,6 +43,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 ```
 
 **Resposta:**
+
 ```json
 {
   "token": "eyJhbGc...",
@@ -60,6 +62,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 ```
 
 **O que acontece internamente:**
+
 - Nova `Company` criada
 - Novo `User` criado
 - Relação `UserCompany` criada com role `OWNER`
@@ -149,6 +152,7 @@ curl -X POST http://localhost:3000/api/v1/snacks/1/portions \
 ```
 
 **Resultado**: O sistema calcula automaticamente:
+
 - Peso total do lanche
 - Custo total (ingredientes)
 - Margem de lucro sugerida
@@ -172,6 +176,7 @@ curl -X POST http://localhost:3000/api/v1/users \
 ```
 
 **Roles disponíveis:**
+
 - `OWNER`: Acesso total + gerenciar usuários
 - `ADMIN`: Acesso total a ingredientes/porções/lanches
 - `EMPLOYEE`: Visualizar apenas (read-only)
@@ -186,7 +191,7 @@ Toda query de leitura/escrita filtra automaticamente por `companyId` do token:
 
 ```typescript
 // Exemplo: listar ingredientes da minha empresa
-GET /api/v1/ingredients
+GET / api / v1 / ingredients;
 // Server executa: WHERE companyId = req.user.companyId
 
 // Resultado: apenas ingredientes da sua empresa, nunca de outras
@@ -194,13 +199,13 @@ GET /api/v1/ingredients
 
 ### Matriz de Permissões (RBAC)
 
-| Ação | OWNER | ADMIN | EMPLOYEE |
-|------|-------|-------|----------|
-| Listar ingredientes | ✅ | ✅ | ✅ |
-| Criar ingrediente | ✅ | ✅ | ❌ |
-| Editar ingrediente | ✅ | ✅ | ❌ |
-| Deletar ingrediente | ✅ | ✅ | ❌ |
-| Gerenciar usuários | ✅ | ❌ | ❌ |
+| Ação                | OWNER | ADMIN | EMPLOYEE |
+| ------------------- | ----- | ----- | -------- |
+| Listar ingredientes | ✅    | ✅    | ✅       |
+| Criar ingrediente   | ✅    | ✅    | ❌       |
+| Editar ingrediente  | ✅    | ✅    | ❌       |
+| Deletar ingrediente | ✅    | ✅    | ❌       |
+| Gerenciar usuários  | ✅    | ❌    | ❌       |
 
 Middleware `authorizeRole()` em cada rota protegida garante que apenas usuários com role permitida consigam acessar.
 
@@ -268,36 +273,43 @@ SaaS_ErmelTech/
 ### Models Principais
 
 **Company** — Representa uma empresa (lanchonete)
+
 ```
 id, name, slug, email, phone
 ```
 
 **User** — Usuário (pode estar em múltiplas empresas)
+
 ```
 id, name, email, password
 ```
 
 **UserCompany** — Relação N:N com role (OWNER/ADMIN/EMPLOYEE)
+
 ```
 userId, companyId, role
 ```
 
 **Ingredient** — Ingredientes da empresa
+
 ```
 id, companyId, name, weightG, cost
 ```
 
 **Portion** — Porção de um ingrediente
+
 ```
 id, companyId, ingredientId, name, weightG, cost
 ```
 
 **Snack** — Lanche (combinação de porções)
+
 ```
 id, companyId, name, imageUrl
 ```
 
 **SnackPortion** — Relação entre Snack e Portion
+
 ```
 snackId, portionId, quantity
 ```
@@ -317,6 +329,7 @@ npm test
 ```
 
 **Testes incluem:**
+
 - ✅ Autenticação (login, registro)
 - ✅ Isolamento de dados por `companyId`
 - ✅ Verificação de permissões (RBAC)
@@ -330,6 +343,7 @@ Resultado esperado: **39 testes passando**
 ## 📦 Tecnologias
 
 ### Backend
+
 - **Node.js 20 (Alpine)** — Runtime JavaScript/TypeScript
 - **Express 5** — Framework web
 - **TypeScript** — Tipagem estática
@@ -340,6 +354,7 @@ Resultado esperado: **39 testes passando**
 - **Multer** — Upload de imagens
 
 ### Frontend
+
 - **React 18** — Biblioteca UI
 - **Vite** — Build tool moderna
 - **Tailwind CSS** — Utilidades CSS
@@ -347,6 +362,7 @@ Resultado esperado: **39 testes passando**
 - **jwt-decode** — Decodificar JWT no client
 
 ### Ferramentas de Desenvolvimento
+
 - **Jest** — Testes unitários
 - **Supertest** — Testes de API
 - **ESLint** — Linter
@@ -359,7 +375,7 @@ Resultado esperado: **39 testes passando**
 
 ### Pré-requisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL 16+
 - npm ou yarn
 
@@ -413,6 +429,7 @@ npm run dev
 ```
 
 **URLs:**
+
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3000
 
@@ -457,11 +474,12 @@ Configure um Ingress, ConfigMaps (variáveis), Secrets (credenciais) e faça dep
 
 ## 🤝 Contribuição
 
-Pull requests são bem-vindos! 
+Pull requests são bem-vindos!
 
 **Antes de PR:**
 
 1. Rode os testes localmente:
+
    ```bash
    npm test
    ```

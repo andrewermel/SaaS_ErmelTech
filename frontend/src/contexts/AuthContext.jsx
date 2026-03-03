@@ -4,7 +4,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import { API_ENDPOINTS, STORAGE_KEYS } from '../constants';
 import { apiService } from '../services/apiService';
 
@@ -67,7 +67,12 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const register = async (name, email, password, companyName) => {
+  const register = async (
+    name,
+    email,
+    password,
+    companyName
+  ) => {
     await apiService.post(API_ENDPOINTS.AUTH.REGISTER, {
       name,
       email,
