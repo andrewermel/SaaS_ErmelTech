@@ -17,11 +17,40 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Validação de email
+  const isValidEmail = email => {
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return emailRegex.test(email);
+  };
+
+  const hasEmailError =
+    email.length > 0 && !isValidEmail(email);
+
   const handleSubmit = async e => {
     e.preventDefault();
     setError(null);
 
-    // Validações
+    // Validações locais
+    if (!name.trim()) {
+      setError('Preencha seu nome');
+      return;
+    }
+
+    if (!companyName.trim()) {
+      setError('Preencha o nome da lanchonete');
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Preencha seu email');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError('Email inválido. Use um email válido.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('As senhas não coincidem');
       return;
@@ -41,9 +70,21 @@ export default function Register() {
         window.location.hash = ROUTES.SNACKS;
       }, 1000);
     } catch (err) {
-      setError(
-        err.message || 'Erro ao cadastrar. Tente novamente.'
-      );
+      const errorMsg =
+        err.message ||
+        'Erro ao cadastrar. Tente novamente.';
+
+      // Mensagem mais clara para email duplicado
+      if (
+        errorMsg.includes('already exists') ||
+        errorMsg.includes('User already exists')
+      ) {
+        setError(
+          'Este email já foi cadastrado. Use outro email ou faça login.'
+        );
+      } else {
+        setError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
@@ -90,6 +131,11 @@ export default function Register() {
             onChange={e => setEmail(e.target.value)}
             required
             placeholder="seu@email.com"
+            error={
+              hasEmailError
+                ? 'Email inválido. Use um email válido.'
+                : ''
+            }
           />
 
           <Input
@@ -128,7 +174,15 @@ export default function Register() {
             type="submit"
             fullWidth
             loading={loading}
-            disabled={loading}
+            disabled={
+              loading ||
+              hasEmailError ||
+              !name.trim() ||
+              !companyName.trim() ||
+              !email.trim() ||
+              password !== confirmPassword ||
+              password.length < 6
+            }
           >
             {loading ? 'Cadastrando...' : 'Cadastrar'}
           </Button>

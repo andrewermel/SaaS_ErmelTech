@@ -1,0 +1,229 @@
+.members-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.members-card {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.members-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* ─── Seção de Convite ─── */
+.invite-section {
+  background: #f8f9fa;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.invite-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.invite-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ─── Seção de Lista ─── */
+.members-list-section {
+  margin-bottom: 30px;
+}
+
+.list-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #27ae60;
+  padding-bottom: 10px;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.member-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.member-info {
+  flex: 1;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.member-email {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.member-role-badge {
+  margin-left: 15px;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.role-owner {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.role-badge.role-admin {
+  background-color: #f39c12;
+  color: white;
+}
+
+.role-badge.role-employee {
+  background-color: #3498db;
+  color: white;
+}
+
+.no-members {
+  text-align: center;
+  color: #95a5a6;
+  padding: 20px;
+  font-size: 14px;
+}
+
+/* ─── Informações de Permissão ─── */
+.permissions-info {
+  background: #ecf0f1;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 30px;
+}
+
+.permissions-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.permissions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.permissions-table thead {
+  background: #34495e;
+  color: white;
+}
+
+.permissions-table th,
+.permissions-table td {
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.permissions-table th {
+  font-weight: 600;
+}
+
+.permissions-table tbody tr:nth-child(odd) {
+  background: #f8f9fa;
+}
+
+.permissions-table tbody tr:hover {
+  background: #ecf0f1;
+}
+
+.permissions-table td:first-child {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.permissions-table td {
+  color: #555;
+  text-align: center;
+}
+
+/* ─── Responsivo ─── */
+@media (max-width: 600px) {
+  .members-container {
+    padding: 10px;
+  }
+
+  .members-card {
+    padding: 20px;
+  }
+
+  .members-title {
+    font-size: 22px;
+  }
+
+  .member-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .member-role-badge {
+    margin-left: 0;
+    width: 100%;
+    text-align: right;
+  }
+
+  .permissions-table th,
+  .permissions-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .invite-form {
+    gap: 12px;
+  }
+}

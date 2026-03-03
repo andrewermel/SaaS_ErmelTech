@@ -4,6 +4,11 @@ import {
   sendValidationError,
   validateRequired,
 } from '../helpers/validators.js';
+import {
+  validateEmail,
+  validatePassword,
+  VALIDATION_MESSAGES,
+} from '../helpers/validationPatterns.js';
 import { CompanyService } from '../services/companyService.js';
 
 const companyService = new CompanyService();
@@ -121,6 +126,115 @@ export const getMembers = async (
     return handleError(
       error,
       'Error fetching members.',
+      res
+    );
+  }
+};
+
+/**
+ * POST /api/v1/companies/:id/invite
+ * Convidar usuário para a empresa com role especificada.
+ * Apenas OWNER pode convidar (validado no middleware)
+ */
+export const inviteMember = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const id = req.params.id as string;
+  const { email, role } = req.body;
+
+  if (!id)
+    return res
+      .status(400)
+      .json({ error: 'Invalid company ID.' });
+
+  const emailError = validateRequired(email, 'Email');
+  if (emailError)
+    return sendValidationError(emailError, res);
+
+  const roleError = validateRequired(role, 'Role');
+  if (roleError) return sendValidationError(roleError, res);
+
+  if (!['ADMIN', 'EMPLOYEE'].includes(role)) {
+    return res
+      .status(400)
+      .json({ error: 'Role must be ADMIN or EMPLOYEE.' });
+  }
+
+  try {
+    const userCompany = await companyService.inviteMember(
+      parseInt(id),
+      email,
+      role
+    );
+    return res.status(201).json(userCompany);
+  } catch (error) {
+    return handleError(
+      error,
+      'Error inviting member.',
+      res
+    );
+  }
+};
+
+/**
+ * POST /api/v1/companies/:id/members
+ * Criar novo usuário ADMIN na empresa.
+ * Cria User + vincula como ADMIN automaticamente.
+ * Apenas OWNER pode criar (validado no middleware)
+ */
+export const createMember = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const id = req.params.id as string;
+  const { name, email, password } = req.body;
+
+  if (!id)
+    return res
+      .status(400)
+      .json({ error: 'Invalid company ID.' });
+
+  const nameError = validateRequired(name, 'Name');
+  if (nameError) return sendValidationError(nameError, res);
+
+  const emailError = validateRequired(email, 'Email');
+  if (emailError)
+    return sendValidationError(emailError, res);
+
+  const passwordError = validateRequired(
+    password,
+    'Password'
+  );
+  if (passwordError)
+    return sendValidationError(passwordError, res);
+
+  // Validar formato de email
+  if (!validateEmail(email)) {
+    return res
+      .status(400)
+      .json({ error: VALIDATION_MESSAGES.INVALID_EMAIL });
+  }
+
+  // Validar força da senha
+  if (!validatePassword(password)) {
+    return res.status(400).json({
+      error: VALIDATION_MESSAGES.WEAK_PASSWORD,
+    });
+  }
+
+  try {
+    const userCompany = await companyService.createMember(
+      parseInt(id),
+      name,
+      email,
+      password
+    );
+    return res.status(201).json(userCompany);
+  } catch (error) {
+    return handleError(
+      error,
+      'Error creating member.',
       res
     );
   }

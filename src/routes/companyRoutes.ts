@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import {
   createCompany,
+  createMember,
   getCompany,
   getMembers,
+  inviteMember,
   updateCompany,
 } from '../controllers/companyController.js';
 import { authenticateJWT } from '../middlewares/authenticateJWT.js';
@@ -16,5 +18,15 @@ router.get('/:id', getCompany);
 router.get('/:id/members', getMembers);
 router.post('/', authorizeRole('OWNER'), createCompany);
 router.put('/:id', authorizeRole('OWNER'), updateCompany);
+router.post(
+  '/:id/invite',
+  authorizeRole('OWNER'),
+  inviteMember
+);
+router.post(
+  '/:id/members',
+  authorizeRole('OWNER'),
+  createMember
+);
 
 export default router;

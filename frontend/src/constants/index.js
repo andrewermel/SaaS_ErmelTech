@@ -5,6 +5,7 @@ export const ROUTES = {
   INGREDIENTS: '#/ingredients',
   PORTIONS: '#/portions',
   SNACKS: '#/snacks',
+  MEMBERS: '#/members',
 };
 
 export const API_BASE_URL = 'http://localhost:3000';

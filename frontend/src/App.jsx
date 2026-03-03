@@ -9,12 +9,14 @@ import {
 import HomePage from './pages/HomePage.jsx';
 import IngredientPage from './pages/IngredientPage.jsx';
 import Login from './pages/Login.jsx';
+import MembersPage from './pages/MembersPage.jsx';
 import PortionPage from './pages/PortionPage.jsx';
 import Register from './pages/Register.jsx';
 import SnackPage from './pages/SnackPage.jsx';
 
 function AppContent() {
-  const { isAuthenticated, logout, loading, user } = useAuth();
+  const { isAuthenticated, logout, loading, user } =
+    useAuth();
   const [route, setRoute] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -89,8 +91,14 @@ function AppContent() {
         {isAuthenticated && user && (
           <div className="header-info">
             <span className="company-info">
-              {user.companyId && <span>🏢 {user.companyId}</span>}
-              {user.role && <span className="role-badge">{user.role}</span>}
+              {user.companyId && (
+                <span>🏢 {user.companyId}</span>
+              )}
+              {user.role && (
+                <span className="role-badge">
+                  {user.role}
+                </span>
+              )}
             </span>
           </div>
         )}
@@ -138,6 +146,14 @@ function AppContent() {
               <a href={ROUTES.PORTIONS} onClick={closeMenu}>
                 🍽️ Porções
               </a>
+              {user?.role === 'OWNER' && (
+                <a
+                  href={ROUTES.MEMBERS}
+                  onClick={closeMenu}
+                >
+                  👥 Gerenciar Membros
+                </a>
+              )}
             </>
           )}
         </nav>
@@ -162,6 +178,8 @@ function AppContent() {
           <IngredientPage />
         ) : route === ROUTES.PORTIONS ? (
           <PortionPage />
+        ) : route === ROUTES.MEMBERS ? (
+          <MembersPage />
         ) : (
           <SnackPage />
         )}
