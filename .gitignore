@@ -36,6 +36,12 @@ yarn-debug.log*
 coverage/
 .nyc_output/
 
+# Performance testing & profiling
+load-result*.json
+.clinic/
+clinic-*.html
+check-db-data.js
+
 # Temporários
 tmp/
 temp/

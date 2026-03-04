@@ -10,7 +10,11 @@
     "test:ci": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --forceExit",
     "lint": "echo '⚠️  ESLint para TypeScript requer configuração adicional. Usando TypeScript check...' && npx tsc --noEmit",
     "dev": "node --loader ts-node/esm src/index.ts",
-    "dev:all": "concurrently \"npm run dev\" \"npm --prefix frontend run dev\""
+    "dev:all": "concurrently \"npm run dev\" \"npm --prefix frontend run dev\"",
+    "load:menu-default": "npx autocannon -c 50 -d 30 http://localhost:3000/api/v1/public/menu/default-company",
+    "load:menu-black": "npx autocannon -c 50 -d 30 http://localhost:3000/api/v1/public/menu/black-lanches",
+    "load:menu-json": "npx autocannon -c 50 -d 30 -j http://localhost:3000/api/v1/public/menu/default-company > load-result.json",
+    "load:warm-up": "npx autocannon -c 10 -d 10 http://localhost:3000/api/v1/public/menu/default-company"
   },
   "keywords": [],
   "author": "",
