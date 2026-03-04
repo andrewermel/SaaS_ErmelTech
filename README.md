@@ -6,7 +6,28 @@ Plataforma SaaS moderna para gestão de custos e cardápios de lanchonetes. Cada
 
 ---
 
-## 🚀 Quick Start (Docker)
+## � A História
+
+Este projeto nasceu de um problema real.
+
+Depois que nossa loja de móveis **(JP Móveis)** faliu após a enchente que atingiu Eldorado do Sul/RS em 2024, minha família começou a vender lanches para recomeçar. Mas havia um problema crítico: não tínhamos **controle real de custos, ingredientes e margem de lucro**.
+
+Como desenvolvedor, fiz o que qualquer dev faria: criei uma plataforma interna para organizar:
+
+- Ingredientes
+- Porções (combinações de ingredientes)
+- Lanches (combinações de porções)
+- Cálculo automático de custo e margem
+
+O projeto começou simples, mas cresceu naturalmente. Outras pessoas que vendem pastel na rua, churrasquinho ou trabalham com lanches começaram a pedir para usar também.
+
+**Foi aí que transformei a aplicação em um SaaS multi-tenant** — cada vendedor agora tem total isolamento de dados, autenticação segura com JWT e controle de permissões (RBAC).
+
+**Lição aprendida:** Tecnologia faz diferença quando resolve um problema real. Este é um exemplo disso. ✅
+
+---
+
+## �🚀 Quick Start (Docker)
 
 ```bash
 git clone <seu-repo>
@@ -22,8 +43,10 @@ docker compose up --build -d
 **URLs:**
 
 - **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:3000
-- **Swagger**: http://localhost:3000/api-docs
+- **Backend**: http://localhost:3001
+- **Swagger**: http://localhost:3001/api-docs
+- **Prometheus**: http://localhost:9090 (métricas de performance)
+- **Grafana**: http://localhost:3000 (dashboard de visualização)
   > Para rodar os testes localmente, veja a seção [🧪 Testes](#-testes) abaixo.
 
 ---
@@ -33,7 +56,7 @@ docker compose up --build -d
 ### 1. Registrar Empresa + Usuário Owner
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3001/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "João Silva",
@@ -74,7 +97,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 ### 2. Login
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/login \
+curl -X POST http://localhost:3001/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "joao@minha-lanchonete.com",
@@ -97,7 +120,7 @@ Authorization: Bearer <seu-token>
 ### 4. Criar Ingredientes
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/ingredients \
+curl -X POST http://localhost:3001/api/v1/ingredients \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -114,7 +137,7 @@ curl -X POST http://localhost:3000/api/v1/ingredients \
 ### 5. Criar Porções (combinações de ingredientes)
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/portions \
+curl -X POST http://localhost:3001/api/v1/portions \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -130,7 +153,7 @@ curl -X POST http://localhost:3000/api/v1/portions \
 ### 6. Criar Lanches (combinação de porções)
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/snacks \
+curl -X POST http://localhost:3001/api/v1/snacks \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -143,7 +166,7 @@ curl -X POST http://localhost:3000/api/v1/snacks \
 ### 7. Adicionar Porções ao Lanche
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/snacks/1/portions \
+curl -X POST http://localhost:3001/api/v1/snacks/1/portions \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -165,7 +188,7 @@ curl -X POST http://localhost:3000/api/v1/snacks/1/portions \
 **OWNER ou ADMIN podem criar usuários:**
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/users \
+curl -X POST http://localhost:3001/api/v1/users \
   -H "Authorization: Bearer <token-owner>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -364,9 +387,51 @@ Resultado esperado: **39 testes passando**
 
 ---
 
-## 📦 Tecnologias
+## 📈 Monitoramento e Observabilidade
 
-### Backend
+A plataforma conta com stack completo de monitoramento de performance e saúde da aplicação.
+
+### Prometheus (Coleta de Métricas)
+
+Endpoint de métricas exposto em:
+
+```bash
+GET /metrics
+```
+
+**Métricas coletadas:**
+
+- Requisições HTTP por rota, método e status code
+- Tempo de resposta (latência) das APIs
+- Memória e CPU do processo Node.js
+- GC (Garbage Collection) events
+
+Acesse o dashboard do Prometheus em **http://localhost:9090** para consultar métricas em tempo real.
+
+### Grafana (Dashboard Visual)
+
+Visualize as métricas do Prometheus com dashboards customizados.
+
+- **URL**: http://localhost:3000
+- **Usuário padrão**: admin
+- **Senha padrão**: admin
+
+**Como configurar Grafana:**
+
+1. Acesse http://localhost:3000
+2. Vá em **Data Sources** → **Add Data Source**
+3. Selecione **Prometheus**
+4. URL: `http://prometheus:9090`
+5. Clique em **Save & Test**
+
+Agora você pode criar dashboards para visualizar:
+
+- Taxa de requisições (RPS)
+- Latência P50, P95, P99
+- Taxa de erro (5xx)
+- Uso de memória e CPU
+
+---
 
 - **Node.js 20 (Alpine)** — Runtime JavaScript/TypeScript
 - **Express 5** — Framework web
@@ -376,6 +441,12 @@ Resultado esperado: **39 testes passando**
 - **JWT (jsonwebtoken)** — Autenticação segura
 - **bcryptjs** — Hashing de senhas
 - **Multer** — Upload de imagens
+- **prom-client** — Exportar métricas para Prometheus
+
+### Observabilidade
+
+- **Prometheus** — Coleta e armazenamento de métricas
+- **Grafana** — Visualização de dashboards
 
 ### Frontend
 

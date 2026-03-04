@@ -37,7 +37,7 @@ services:
       PORT: 3000
       NODE_ENV: production
     ports:
-      - '3000:3000'
+      - '3001:3000'
     depends_on:
       postgres:
         condition: service_healthy
@@ -87,10 +87,37 @@ services:
     networks:
       - blacklanches-network
 
+  # 📈 Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: saas_ermeltech-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - '9090:9090'
+    networks:
+      - blacklanches-network
+
+  # 📊 Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: saas_ermeltech-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - blacklanches-network
+
 # 📊 Volumes persistentes
 volumes:
   postgres_data:
   postgres_test_data:
+  prometheus_data:
+  grafana_data:
 
 # 🌐 Network para comunicação entre containers
 networks:
