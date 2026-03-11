@@ -569,3 +569,211 @@
   display: block;
   margin: 0 auto;
 }
+
+/* ============ NOVA INTERFACE COM CHECKBOXES ============ */
+
+.portions-help {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.portions-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(280px, 1fr)
+  );
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.portion-checkbox-item {
+  padding: 16px;
+  border: 2px solid #e6e9ef;
+  border-radius: 8px;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.portion-checkbox-item:hover {
+  border-color: #daa520;
+  background-color: #fffbf0;
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.1);
+}
+
+.portion-checkbox-item input:checked ~ .checkbox-text {
+  color: #2e7d32;
+}
+
+.portion-checkbox-item input:checked {
+  border-color: #2e7d32;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: #2e7d32;
+  flex-shrink: 0;
+}
+
+.checkbox-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.checkbox-text strong {
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.checkbox-text small {
+  color: #999;
+  font-size: 12px;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f0f8ff;
+  border-radius: 6px;
+  border: 1px solid #daa520;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #daa520;
+  background-color: white;
+  color: #daa520;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.qty-btn:hover {
+  background-color: #daa520;
+  color: white;
+  transform: scale(1.05);
+}
+
+.qty-input {
+  width: 50px;
+  height: 32px;
+  text-align: center;
+  border: 1px solid #daa520;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 16px;
+  background-color: white;
+  color: #333;
+}
+
+.qty-input:focus {
+  outline: none;
+  border-color: #b8860b;
+  box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+}
+
+.summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid #e6e9ef;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-values {
+  color: #999;
+  font-size: 12px;
+}
+
+.total-summary {
+  padding: 16px;
+  background: linear-gradient(
+    135deg,
+    #fffbf0 0%,
+    #f0f8ff 100%
+  );
+  border-radius: 8px;
+  border: 2px solid #daa520;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+  font-size: 14px;
+}
+
+.summary-line:last-child {
+  border-bottom: none;
+}
+
+.summary-line strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.summary-line span {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.summary-line.highlight span.cost {
+  color: #f44336;
+  font-size: 14px;
+}
+
+.summary-line.highlight span.price {
+  color: #2e7d32;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.portions-summary h5 {
+  color: #daa520;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+}

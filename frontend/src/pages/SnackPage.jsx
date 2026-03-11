@@ -38,6 +38,8 @@ export default function SnackPage() {
   const [selectedPortionId, setSelectedPortionId] =
     useState('');
   const [portionsToAdd, setPortionsToAdd] = useState([]);
+  const [portionQuantities, setPortionQuantities] =
+    useState({}); // Map: portionId -> quantity
   const [isEditing, setIsEditing] = useState(false);
   const [editingSnackId, setEditingSnackId] =
     useState(null);
@@ -66,10 +68,46 @@ export default function SnackPage() {
     }
   };
 
-  const handleRemovePortionFromList = index => {
-    setPortionsToAdd(
-      portionsToAdd.filter((_, i) => i !== index)
+  const handleTogglePortion = portionId => {
+    setPortionQuantities(prev => {
+      const newQuantities = { ...prev };
+      if (newQuantities[portionId]) {
+        delete newQuantities[portionId];
+      } else {
+        newQuantities[portionId] = 1;
+      }
+      return newQuantities;
+    });
+  };
+
+  const handleChangeQuantity = (portionId, quantity) => {
+    const q = Math.max(0, parseInt(quantity) || 0);
+    setPortionQuantities(prev => {
+      const newQuantities = { ...prev };
+      if (q === 0) {
+        delete newQuantities[portionId];
+      } else {
+        newQuantities[portionId] = q;
+      }
+      return newQuantities;
+    });
+  };
+
+  const getPortionsArrayFromQuantities = () => {
+    const result = [];
+    Object.entries(portionQuantities).forEach(
+      ([portionId, quantity]) => {
+        const portion = portions.find(
+          p => p.id === Number(portionId)
+        );
+        if (portion) {
+          for (let i = 0; i < quantity; i++) {
+            result.push(portion);
+          }
+        }
+      }
     );
+    return result;
   };
 
   const handleCreateSnack = async e => {
@@ -101,9 +139,14 @@ export default function SnackPage() {
         formData
       );
 
-      // Adicionar porções ao lanche criado
-      if (portionsToAdd.length > 0 && newSnack?.id) {
-        for (const portion of portionsToAdd) {
+      // Adicionar porções ao lanche criado usando as quantidades
+      if (
+        Object.keys(portionQuantities).length > 0 &&
+        newSnack?.id
+      ) {
+        const portionsArray =
+          getPortionsArrayFromQuantities();
+        for (const portion of portionsArray) {
           await apiService.post(
             `${API_ENDPOINTS.SNACKS}/${newSnack.id}/portions/${portion.id}`,
             { portionId: portion.id }
@@ -115,6 +158,7 @@ export default function SnackPage() {
       setSnackImage(null);
       setSnackFinalPrice('');
       setPortionsToAdd([]);
+      setPortionQuantities({});
       await fetchAll();
     } catch (err) {
       setActionError(err.message);
@@ -131,8 +175,16 @@ export default function SnackPage() {
     setSnackFinalPrice(snack.finalPrice || '');
     // Carregar porções se já existirem
     if (snack.portions && snack.portions.length > 0) {
-      setPortionsToAdd(snack.portions);
+      const quantities = {};
+      snack.portions.forEach(portion => {
+        quantities[portion.id] =
+          (quantities[portion.id] || 0) + 1;
+      });
+      setPortionQuantities(quantities);
+    } else {
+      setPortionQuantities({});
     }
+    setPortionsToAdd([]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -143,6 +195,7 @@ export default function SnackPage() {
     setSnackImage(null);
     setSnackFinalPrice('');
     setPortionsToAdd([]);
+    setPortionQuantities({});
     setActionError('');
   };
 
@@ -158,29 +211,21 @@ export default function SnackPage() {
       );
       const currentPortions = currentSnack.portions || [];
 
-      // Remover porções que não estão mais na lista
+      // Remover todas as porções atuais
       for (const currentPortion of currentPortions) {
-        if (
-          !portionsToAdd.find(
-            p => p.id === currentPortion.id
-          )
-        ) {
-          await apiService.delete(
-            `${API_ENDPOINTS.SNACKS}/${editingSnackId}/portions/${currentPortion.id}`
-          );
-        }
+        await apiService.delete(
+          `${API_ENDPOINTS.SNACKS}/${editingSnackId}/portions/${currentPortion.id}`
+        );
       }
 
-      // Adicionar novas porções
-      for (const portion of portionsToAdd) {
-        if (
-          !currentPortions.find(p => p.id === portion.id)
-        ) {
-          await apiService.post(
-            `${API_ENDPOINTS.SNACKS}/${editingSnackId}/portions/${portion.id}`,
-            { portionId: portion.id }
-          );
-        }
+      // Adicionar as novas porções com as quantidades selecionadas
+      const portionsArray =
+        getPortionsArrayFromQuantities();
+      for (const portion of portionsArray) {
+        await apiService.post(
+          `${API_ENDPOINTS.SNACKS}/${editingSnackId}/portions/${portion.id}`,
+          { portionId: portion.id }
+        );
       }
 
       handleCancelEdit();
@@ -332,91 +377,215 @@ export default function SnackPage() {
         {portions && portions.length > 0 ? (
           <>
             <div className="add-portion-to-form">
-              <h4>Adicionar Porções:</h4>
-              <div className="form-row">
-                <select
-                  value={selectedPortionId}
-                  onChange={e =>
-                    setSelectedPortionId(e.target.value)
-                  }
-                  className="input"
-                >
-                  <option value="">
-                    Selecione uma porção
-                  </option>
-                  {portions.map(portion => (
-                    <option
-                      key={portion.id}
-                      value={portion.id}
-                    >
-                      {portion.name} (
-                      {formatWeight(portion.weightG)} - R${' '}
-                      {formatCurrency(portion.cost, 4)})
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  type="button"
-                  onClick={handleAddPortionToList}
-                  variant="secondary"
-                  disabled={!selectedPortionId}
-                >
-                  ➕ Adicionar
-                </Button>
-              </div>
+              <h4>📋 Selecione as Porções:</h4>
+              <p className="portions-help">
+                Marque as porções e ajuste a quantidade para
+                cada uma
+              </p>
 
-              {portionsToAdd.length > 0 && (
-                <div className="portions-preview">
-                  <h5>Porções selecionadas:</h5>
-                  <ul className="portions-list">
-                    {portionsToAdd.map((portion, index) => (
-                      <li
-                        key={`${portion.id}-${index}`}
-                        className="portion-item"
-                      >
-                        <span className="portion-info">
-                          {portion.name} (
-                          {formatWeight(portion.weightG)} -
-                          R${' '}
-                          {formatCurrency(portion.cost, 4)})
-                        </span>
+              <div className="portions-checkbox-grid">
+                {portions.map(portion => (
+                  <div
+                    key={portion.id}
+                    className="portion-checkbox-item"
+                  >
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={
+                          !!portionQuantities[portion.id]
+                        }
+                        onChange={() =>
+                          handleTogglePortion(portion.id)
+                        }
+                        className="checkbox-input"
+                      />
+                      <span className="checkbox-text">
+                        <strong>{portion.name}</strong>
+                        <small>
+                          {formatWeight(portion.weightG)} •
+                          R$
+                          {formatCurrency(portion.cost, 4)}
+                        </small>
+                      </span>
+                    </label>
+
+                    {portionQuantities[portion.id] && (
+                      <div className="quantity-control">
                         <button
                           type="button"
                           onClick={() =>
-                            handleRemovePortionFromList(
-                              index
+                            handleChangeQuantity(
+                              portion.id,
+                              portionQuantities[
+                                portion.id
+                              ] - 1
                             )
                           }
-                          className="btn-remove-portion"
+                          className="qty-btn"
                         >
-                          ❌
+                          −
                         </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="portions-summary">
-                    <strong>Total:</strong>{' '}
-                    {portionsToAdd.length} porções • Peso:{' '}
-                    {formatWeight(
-                      portionsToAdd.reduce(
-                        (sum, p) => sum + Number(p.weightG),
-                        0
-                      )
-                    )}{' '}
-                    • Custo: R${' '}
-                    {formatCurrency(
-                      portionsToAdd.reduce(
-                        (sum, p) => sum + Number(p.cost),
-                        0
-                      )
-                    )}{' '}
-                    • Preço Sugerido: R${' '}
-                    {formatCurrency(
-                      portionsToAdd.reduce(
-                        (sum, p) => sum + Number(p.cost),
-                        0
-                      ) * 2
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={
+                            portionQuantities[portion.id]
+                          }
+                          onChange={e =>
+                            handleChangeQuantity(
+                              portion.id,
+                              e.target.value
+                            )
+                          }
+                          className="qty-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleChangeQuantity(
+                              portion.id,
+                              portionQuantities[
+                                portion.id
+                              ] + 1
+                            )
+                          }
+                          className="qty-btn"
+                        >
+                          +
+                        </button>
+                      </div>
                     )}
+                  </div>
+                ))}
+              </div>
+
+              {Object.keys(portionQuantities).length >
+                0 && (
+                <div className="portions-summary">
+                  <h5>📊 Resumo das Porções:</h5>
+                  <div className="summary-list">
+                    {Object.entries(portionQuantities).map(
+                      ([portionId, quantity]) => {
+                        const portion = portions.find(
+                          p => p.id === Number(portionId)
+                        );
+                        if (!portion) return null;
+                        const totalCost =
+                          Number(portion.cost) * quantity;
+                        const totalWeight =
+                          Number(portion.weightG) *
+                          quantity;
+
+                        return (
+                          <div
+                            key={portionId}
+                            className="summary-item"
+                          >
+                            <span>
+                              {quantity}x {portion.name}
+                            </span>
+                            <span className="summary-values">
+                              {formatWeight(totalWeight)} •
+                              R$
+                              {formatCurrency(totalCost, 4)}
+                            </span>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+
+                  <div className="total-summary">
+                    <div className="summary-line">
+                      <strong>Total de Porções:</strong>
+                      <span>
+                        {Object.values(
+                          portionQuantities
+                        ).reduce((a, b) => a + b, 0)}
+                      </span>
+                    </div>
+                    <div className="summary-line">
+                      <strong>Peso Total:</strong>
+                      <span>
+                        {formatWeight(
+                          Object.entries(
+                            portionQuantities
+                          ).reduce(
+                            (sum, [portionId, qty]) => {
+                              const portion = portions.find(
+                                p =>
+                                  p.id === Number(portionId)
+                              );
+                              return (
+                                sum +
+                                (portion
+                                  ? Number(
+                                      portion.weightG
+                                    ) * qty
+                                  : 0)
+                              );
+                            },
+                            0
+                          )
+                        )}
+                      </span>
+                    </div>
+                    <div className="summary-line">
+                      <strong>Custo Total:</strong>
+                      <span className="cost">
+                        R$
+                        {formatCurrency(
+                          Object.entries(
+                            portionQuantities
+                          ).reduce(
+                            (sum, [portionId, qty]) => {
+                              const portion = portions.find(
+                                p =>
+                                  p.id === Number(portionId)
+                              );
+                              return (
+                                sum +
+                                (portion
+                                  ? Number(portion.cost) *
+                                    qty
+                                  : 0)
+                              );
+                            },
+                            0
+                          ),
+                          4
+                        )}
+                      </span>
+                    </div>
+                    <div className="summary-line highlight">
+                      <strong>Preço Sugerido:</strong>
+                      <span className="price">
+                        R$
+                        {formatCurrency(
+                          Object.entries(
+                            portionQuantities
+                          ).reduce(
+                            (sum, [portionId, qty]) => {
+                              const portion = portions.find(
+                                p =>
+                                  p.id === Number(portionId)
+                              );
+                              return (
+                                sum +
+                                (portion
+                                  ? Number(portion.cost) *
+                                    qty
+                                  : 0)
+                              );
+                            },
+                            0
+                          ) * 2,
+                          4
+                        )}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
