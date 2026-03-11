@@ -9,7 +9,7 @@ export const ROUTES = {
   MENU: '#/menu/:companySlug',
 };
 
-export const API_BASE_URL = 'http://localhost:3000';
+export const API_BASE_URL = 'http://localhost:3001';
 
 export const API_ENDPOINTS = {
   AUTH: {
