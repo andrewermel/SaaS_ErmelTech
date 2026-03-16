@@ -10,13 +10,11 @@ export const ImageUpload = memo(
       const file = e.target.files[0];
       if (!file) return;
 
-      // Verificar tipo
       if (!file.type.startsWith('image/')) {
         alert('Por favor, selecione uma imagem válida');
         return;
       }
 
-      // Verificar tamanho (5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('A imagem deve ter no máximo 5MB');
         return;

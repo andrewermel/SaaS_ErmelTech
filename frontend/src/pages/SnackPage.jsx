@@ -39,7 +39,7 @@ export default function SnackPage() {
     useState('');
   const [portionsToAdd, setPortionsToAdd] = useState([]);
   const [portionQuantities, setPortionQuantities] =
-    useState({}); // Map: portionId -> quantity
+    useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editingSnackId, setEditingSnackId] =
     useState(null);
@@ -139,7 +139,6 @@ export default function SnackPage() {
         formData
       );
 
-      // Adicionar porções ao lanche criado usando as quantidades
       if (
         Object.keys(portionQuantities).length > 0 &&
         newSnack?.id
@@ -173,7 +172,6 @@ export default function SnackPage() {
     setSnackName(snack.name);
     setSnackImage(snack.imageUrl);
     setSnackFinalPrice(snack.finalPrice || '');
-    // Carregar porções se já existirem
     if (snack.portions && snack.portions.length > 0) {
       const quantities = {};
       snack.portions.forEach(portion => {
@@ -205,20 +203,17 @@ export default function SnackPage() {
     setActionLoading(true);
 
     try {
-      // Buscar porções atuais do lanche
       const currentSnack = await apiService.get(
         `${API_ENDPOINTS.SNACKS}/${editingSnackId}`
       );
       const currentPortions = currentSnack.portions || [];
 
-      // Remover todas as porções atuais
       for (const currentPortion of currentPortions) {
         await apiService.delete(
           `${API_ENDPOINTS.SNACKS}/${editingSnackId}/portions/${currentPortion.id}`
         );
       }
 
-      // Adicionar as novas porções com as quantidades selecionadas
       const portionsArray =
         getPortionsArrayFromQuantities();
       for (const portion of portionsArray) {

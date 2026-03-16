@@ -69,7 +69,6 @@ export const login = async (
       email: user.email,
     };
 
-    // Buscar vínculo com empresa (pode não existir)
     const userCompany = await prisma.userCompany.findFirst({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },

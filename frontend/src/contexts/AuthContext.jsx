@@ -56,7 +56,6 @@ export const AuthProvider = ({ children }) => {
     );
     localStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
 
-    // Decodificar JWT para extrair companyId e role
     const decoded = jwtDecode(data.token);
     const userData = {
       userId: decoded.userId,
@@ -84,7 +83,6 @@ export const AuthProvider = ({ children }) => {
       companyName,
     });
 
-    // Após criar usuário, fazer login
     return await login(email, password);
   };
 

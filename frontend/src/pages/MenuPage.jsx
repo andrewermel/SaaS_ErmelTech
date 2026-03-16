@@ -46,7 +46,6 @@ export default function MenuPage({
   const getImageUrl = imageUrl => {
     if (!imageUrl) return null;
     if (imageUrl.startsWith('http')) return imageUrl;
-    // Remove leading slash if present, as API_BASE_URL already includes it
     const cleanPath = imageUrl.startsWith('/')
       ? imageUrl.slice(1)
       : imageUrl;
@@ -91,7 +90,6 @@ export default function MenuPage({
     );
   }
 
-  // Calcular preço a exibir (finalPrice ou suggestedPrice)
   const getDisplayPrice = snack => {
     if (snack.finalPrice) {
       return parseFloat(snack.finalPrice);

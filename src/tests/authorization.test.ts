@@ -15,12 +15,10 @@ describe('Role-based authorization (RBAC matrix)', () => {
   let companyId: number;
 
   beforeAll(async () => {
-    // Criar empresa com OWNER
     const ownerData = await createTestTenant('rbac-owner');
     ownerTenant = ownerData;
     companyId = ownerData.companyId;
 
-    // Adicionar ADMIN
     const adminUser = await prisma.user.create({
       data: {
         name: 'Test Admin',
@@ -37,7 +35,6 @@ describe('Role-based authorization (RBAC matrix)', () => {
       },
     });
 
-    // Adicionar EMPLOYEE
     const employeeUser = await prisma.user.create({
       data: {
         name: 'Test Employee',
@@ -54,7 +51,6 @@ describe('Role-based authorization (RBAC matrix)', () => {
       },
     });
 
-    // Gerar tokens JWT
     const jwt = await import('jsonwebtoken');
     const secret = process.env.JWT_SECRET!;
 
@@ -90,20 +86,27 @@ describe('Role-based authorization (RBAC matrix)', () => {
   });
 
   afterAll(async () => {
-    await cleanupTestTenant(ownerTenant.userId, ownerTenant.companyId);
+    await cleanupTestTenant(
+      ownerTenant.userId,
+      ownerTenant.companyId
+    );
     await cleanupTestTenant(adminTenant.userId, companyId);
-    await cleanupTestTenant(employeeTenant.userId, companyId);
+    await cleanupTestTenant(
+      employeeTenant.userId,
+      companyId
+    );
     await prisma.$disconnect();
   });
 
-  // ========== CREATE AUTHORIZATION TESTS ==========
   it('OWNER passa em autorização para CREATE', async () => {
     const next = jest.fn();
     const jsonMock = jest.fn();
     const statusMock = jest
       .fn()
       .mockReturnValue({ json: jsonMock });
-    const res = { status: statusMock } as unknown as Response;
+    const res = {
+      status: statusMock,
+    } as unknown as Response;
 
     const req = {
       user: {
@@ -124,7 +127,9 @@ describe('Role-based authorization (RBAC matrix)', () => {
     const statusMock = jest
       .fn()
       .mockReturnValue({ json: jsonMock });
-    const res = { status: statusMock } as unknown as Response;
+    const res = {
+      status: statusMock,
+    } as unknown as Response;
 
     const req = {
       user: {
@@ -144,7 +149,9 @@ describe('Role-based authorization (RBAC matrix)', () => {
     const statusMock = jest
       .fn()
       .mockReturnValue({ json: jsonMock });
-    const res = { status: statusMock } as unknown as Response;
+    const res = {
+      status: statusMock,
+    } as unknown as Response;
 
     const req = {
       user: {
@@ -159,14 +166,15 @@ describe('Role-based authorization (RBAC matrix)', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  // ========== DELETE AUTHORIZATION TESTS ==========
   it('OWNER passa em autorização para DELETE', async () => {
     const next = jest.fn();
     const jsonMock = jest.fn();
     const statusMock = jest
       .fn()
       .mockReturnValue({ json: jsonMock });
-    const res = { status: statusMock } as unknown as Response;
+    const res = {
+      status: statusMock,
+    } as unknown as Response;
 
     const req = {
       user: {
@@ -187,7 +195,9 @@ describe('Role-based authorization (RBAC matrix)', () => {
     const statusMock = jest
       .fn()
       .mockReturnValue({ json: jsonMock });
-    const res = { status: statusMock } as unknown as Response;
+    const res = {
+      status: statusMock,
+    } as unknown as Response;
 
     const req = {
       user: {
@@ -208,7 +218,9 @@ describe('Role-based authorization (RBAC matrix)', () => {
     const statusMock = jest
       .fn()
       .mockReturnValue({ json: jsonMock });
-    const res = { status: statusMock } as unknown as Response;
+    const res = {
+      status: statusMock,
+    } as unknown as Response;
 
     const req = {
       user: {

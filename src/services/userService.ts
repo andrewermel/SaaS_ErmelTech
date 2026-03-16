@@ -26,10 +26,8 @@ export class UserService {
     password: string,
     companyName?: string
   ) {
-    // Padronizar email
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Verificar se usuário já existe
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
@@ -38,10 +36,8 @@ export class UserService {
       throw new Error('User already exists.');
     }
 
-    // Criptografar senha com bcrypt (12 rounds)
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // SE companyName fornecido → transação criando user + company
     if (companyName) {
       return prisma.$transaction(async tx => {
         const user = await tx.user.create({
@@ -74,7 +70,6 @@ export class UserService {
       });
     }
 
-    // SEM companyName → comportamento original (testes antigos passam aqui)
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -83,7 +78,6 @@ export class UserService {
       },
     });
 
-    // Retornar sem a senha
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }

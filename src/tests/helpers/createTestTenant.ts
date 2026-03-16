@@ -65,7 +65,6 @@ export async function cleanupTestTenant(
   userId: number,
   companyId: number
 ) {
-  // Limpar na ordem correta (relações primeiro)
   await prisma.snackPortion.deleteMany({
     where: { snack: { companyId } },
   });

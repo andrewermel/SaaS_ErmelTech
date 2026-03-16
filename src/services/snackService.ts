@@ -151,13 +151,11 @@ export class SnackService {
   ) {
     return prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        // Verificar que snack pertence à empresa
         const snack = await tx.snack.findFirst({
           where: { id: snackId, companyId },
         });
         if (!snack) throw new Error('Snack not found.');
 
-        // Verificar que porção pertence à empresa
         const portion = await tx.portion.findFirst({
           where: { id: portionId, companyId },
         });
@@ -195,7 +193,6 @@ export class SnackService {
   ): Promise<{ message: string }> {
     return prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        // Verificar que snack pertence à empresa
         const snack = await tx.snack.findFirst({
           where: { id: snackId, companyId },
         });
@@ -243,7 +240,6 @@ export class SnackService {
     }) as any;
   }
 
-  // PUBLIC: Get menu by company slug
   async getPublicMenu(companySlug: string) {
     const company = await prisma.company.findUnique({
       where: { slug: companySlug },

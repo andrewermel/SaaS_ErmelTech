@@ -8,7 +8,6 @@ import { SnackService } from '../services/snackService.js';
 
 const snackService = new SnackService();
 
-// PUBLIC: Get menu by company slug (no authentication required)
 export const getPublicMenu = async (
   req: Request,
   res: Response

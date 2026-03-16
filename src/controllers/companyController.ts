@@ -209,14 +209,12 @@ export const createMember = async (
   if (passwordError)
     return sendValidationError(passwordError, res);
 
-  // Validar formato de email
   if (!validateEmail(email)) {
     return res
       .status(400)
       .json({ error: VALIDATION_MESSAGES.INVALID_EMAIL });
   }
 
-  // Validar força da senha
   if (!validatePassword(password)) {
     return res.status(400).json({
       error: VALIDATION_MESSAGES.WEAK_PASSWORD,

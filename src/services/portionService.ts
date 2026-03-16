@@ -1,11 +1,14 @@
-import { Decimal } from "@prisma/client/runtime/library";
-import prisma from "../lib/prisma.js";
-import type { Ingredient, Portion } from "../types/entities.js";
+import { Decimal } from '@prisma/client/runtime/library';
+import prisma from '../lib/prisma.js';
+import type {
+  Ingredient,
+  Portion,
+} from '../types/entities.js';
 
 const calculatePortionCost = (
   ingredientCost: Decimal,
   ingredientWeightG: number,
-  portionWeightG: number,
+  portionWeightG: number
 ): Decimal => {
   return ingredientCost
     .div(new Decimal(ingredientWeightG))
@@ -17,20 +20,21 @@ export class PortionService {
     ingredientId: number,
     name: string,
     weightG: number,
-    companyId: number,
+    companyId: number
   ): Promise<Portion> {
-    // Verificar que o ingrediente pertence à MESMA empresa
     const ingredient = await prisma.ingredient.findFirst({
       where: { id: ingredientId, companyId },
     });
     if (!ingredient) {
-      throw new Error('Ingredient not found or does not belong to this company.');
+      throw new Error(
+        'Ingredient not found or does not belong to this company.'
+      );
     }
 
     const cost = calculatePortionCost(
       ingredient.cost as Decimal,
       ingredient.weightG,
-      weightG,
+      weightG
     );
 
     return prisma.portion.create({
@@ -44,7 +48,9 @@ export class PortionService {
     }) as any;
   }
 
-  async findAll(companyId: number): Promise<(Portion & { ingredient: Ingredient })[]> {
+  async findAll(
+    companyId: number
+  ): Promise<(Portion & { ingredient: Ingredient })[]> {
     return prisma.portion.findMany({
       where: { companyId },
       include: { ingredient: true },
@@ -55,13 +61,15 @@ export class PortionService {
     return prisma.portion.findFirst({
       where: { id, companyId },
       include: { ingredient: true },
-    }) as Promise<(Portion & { ingredient: Ingredient }) | null>;
+    }) as Promise<
+      (Portion & { ingredient: Ingredient }) | null
+    >;
   }
 
   async update(
     id: number,
     data: { name?: string; weightG?: number },
-    companyId: number,
+    companyId: number
   ): Promise<Portion & { ingredient: Ingredient }> {
     const existing = await prisma.portion.findFirst({
       where: { id, companyId },
@@ -76,13 +84,14 @@ export class PortionService {
     } = {};
 
     if (data.name) updateData.name = data.name.trim();
-    if (data.weightG !== undefined) updateData.weightG = data.weightG;
+    if (data.weightG !== undefined)
+      updateData.weightG = data.weightG;
 
     if (data.weightG !== undefined) {
       const newCost = calculatePortionCost(
         (existing as any).ingredient.cost as Decimal,
         (existing as any).ingredient.weightG,
-        data.weightG,
+        data.weightG
       );
       updateData.cost = newCost;
     }
@@ -94,21 +103,25 @@ export class PortionService {
     }) as any;
   }
 
-  async delete(id: number, companyId: number): Promise<{ message: string }> {
+  async delete(
+    id: number,
+    companyId: number
+  ): Promise<{ message: string }> {
     const existing = await prisma.portion.findFirst({
       where: { id, companyId },
     });
     if (!existing) throw new Error('Portion not found.');
 
-    const snackPortions = await prisma.snackPortion.findMany({
-      where: { portionId: id },
-    });
+    const snackPortions =
+      await prisma.snackPortion.findMany({
+        where: { portionId: id },
+      });
 
     if (snackPortions.length > 0) {
-      throw new Error("Portion is in use by snacks.");
+      throw new Error('Portion is in use by snacks.');
     }
 
     await prisma.portion.delete({ where: { id } });
-    return { message: "Deleted." };
+    return { message: 'Deleted.' };
   }
 }

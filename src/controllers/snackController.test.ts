@@ -2,7 +2,6 @@
 import { Request, Response } from 'express';
 import type { SnackWithTotals } from '../types/entities.js';
 
-// Defina assinaturas de funções com companyId
 type CreateSnackFn = (
   name: string,
   companyId: number,
@@ -12,10 +11,16 @@ type CreateSnackFn = (
   name: string;
   imageUrl: string | null;
   companyId: number;
-  snackPortions: Array<{ portion: object; quantity: number }>;
+  snackPortions: Array<{
+    portion: object;
+    quantity: number;
+  }>;
 }>;
 
-type GetSnackWithTotalsFn = (snackId: number, companyId: number) => Promise<SnackWithTotals | null>;
+type GetSnackWithTotalsFn = (
+  snackId: number,
+  companyId: number
+) => Promise<SnackWithTotals | null>;
 
 type GetAllSnacksFn = () => Promise<SnackWithTotals[]>;
 
@@ -36,11 +41,14 @@ type RemovePortionFn = (
   companyId: number
 ) => Promise<{ message: string }>;
 
-type DeleteSnackFn = (snackId: number, companyId: number) => Promise<void>;
+type DeleteSnackFn = (
+  snackId: number,
+  companyId: number
+) => Promise<void>;
 
-// Mocks corretamente tipados
 const mockCreateSnack = jest.fn<CreateSnackFn>();
-const mockGetSnackWithTotals = jest.fn<GetSnackWithTotalsFn>();
+const mockGetSnackWithTotals =
+  jest.fn<GetSnackWithTotalsFn>();
 const mockAddPortion = jest.fn<AddPortionFn>();
 const mockRemovePortion = jest.fn<RemovePortionFn>();
 const mockDeleteSnack = jest.fn<DeleteSnackFn>();
@@ -53,17 +61,31 @@ jest.unstable_mockModule(
       getSnackWithTotals: mockGetSnackWithTotals,
       addPortion: mockAddPortion,
       removePortion: mockRemovePortion,
-      getAllSnacks: jest.fn<() => Promise<SnackWithTotals[]>>().mockResolvedValue([]),
+      getAllSnacks: jest
+        .fn<() => Promise<SnackWithTotals[]>>()
+        .mockResolvedValue([]),
       deleteSnack: mockDeleteSnack,
     })),
   })
 );
 
 describe('snackController', () => {
-  let createSnack: (req: Request, res: Response) => Promise<Response>;
-  let getSnack: (req: Request, res: Response) => Promise<Response>;
-  let addPortion: (req: Request, res: Response) => Promise<Response>;
-  let removePortion: (req: Request, res: Response) => Promise<Response>;
+  let createSnack: (
+    req: Request,
+    res: Response
+  ) => Promise<Response>;
+  let getSnack: (
+    req: Request,
+    res: Response
+  ) => Promise<Response>;
+  let addPortion: (
+    req: Request,
+    res: Response
+  ) => Promise<Response>;
+  let removePortion: (
+    req: Request,
+    res: Response
+  ) => Promise<Response>;
 
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -168,9 +190,13 @@ describe('snackController', () => {
   });
 
   it('removePortion success', async () => {
-    mockRemovePortion.mockResolvedValue({ message: 'Portion removed.' });
+    mockRemovePortion.mockResolvedValue({
+      message: 'Portion removed.',
+    });
     req.params = { snackId: '1', portionId: '2' };
     await removePortion(req as Request, res as Response);
-    expect(json).toHaveBeenCalledWith({ message: 'Portion removed.' });
+    expect(json).toHaveBeenCalledWith({
+      message: 'Portion removed.',
+    });
   });
 });

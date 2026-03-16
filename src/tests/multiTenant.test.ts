@@ -19,16 +19,18 @@ describe('Multi-tenant isolation', () => {
   const createdIds: number[] = [];
 
   beforeAll(async () => {
-    // Criar dois tenants completamente separados
     tenantA = await createTestTenant('tenant-a');
     tenantB = await createTestTenant('tenant-b');
 
-    // Criar um ingrediente para tenantA
     const json = jest.fn();
     const status = jest.fn().mockReturnValue({ json });
 
     const req = {
-      body: { name: 'Secret Ingredient A', weightG: 500, cost: 30 },
+      body: {
+        name: 'Secret Ingredient A',
+        weightG: 500,
+        cost: 30,
+      },
       user: {
         userId: tenantA.userId,
         email: tenantA.token,
@@ -45,8 +47,14 @@ describe('Multi-tenant isolation', () => {
   });
 
   afterAll(async () => {
-    await cleanupTestTenant(tenantA.userId, tenantA.companyId);
-    await cleanupTestTenant(tenantB.userId, tenantB.companyId);
+    await cleanupTestTenant(
+      tenantA.userId,
+      tenantA.companyId
+    );
+    await cleanupTestTenant(
+      tenantB.userId,
+      tenantB.companyId
+    );
     await prisma.$disconnect();
   });
 
@@ -69,7 +77,6 @@ describe('Multi-tenant isolation', () => {
     const result = json.mock.calls[0]?.[0] as any[];
     expect(Array.isArray(result)).toBe(true);
 
-    // Verificar que ingrediente de A NÃO está na lista de B
     const ingredientFromA = result?.find(
       (ing: any) => ing.id === ingredientIdA
     );
@@ -95,12 +102,13 @@ describe('Multi-tenant isolation', () => {
     const result = json.mock.calls[0]?.[0] as any[];
     expect(Array.isArray(result)).toBe(true);
 
-    // Deve conter o ingrediente criado por A
     const ingredientFromA = result?.find(
       (ing: any) => ing.id === ingredientIdA
     );
     expect(ingredientFromA).toBeDefined();
-    expect(ingredientFromA?.name).toBe('Secret Ingredient A');
+    expect(ingredientFromA?.name).toBe(
+      'Secret Ingredient A'
+    );
   });
 
   it('TenantB não consegue deletar ingrediente de TenantA (404)', async () => {
@@ -120,7 +128,6 @@ describe('Multi-tenant isolation', () => {
 
     await deleteIngredient(req, res);
 
-    // Deve retornar 404 (ingrediente não existe para essa empresa)
     expect(status).toHaveBeenCalledWith(404);
   });
 });

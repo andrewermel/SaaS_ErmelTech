@@ -17,7 +17,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Validação de email
   const isValidEmail = email => {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
@@ -30,7 +29,6 @@ export default function Register() {
     e.preventDefault();
     setError(null);
 
-    // Validações locais
     if (!name.trim()) {
       setError('Preencha seu nome');
       return;
@@ -74,7 +72,6 @@ export default function Register() {
         err.message ||
         'Erro ao cadastrar. Tente novamente.';
 
-      // Mensagem mais clara para email duplicado
       if (
         errorMsg.includes('already exists') ||
         errorMsg.includes('User already exists')

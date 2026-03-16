@@ -112,10 +112,8 @@ export class CompanyService {
     email: string,
     role: 'ADMIN' | 'EMPLOYEE'
   ) {
-    // Normalizar email
     const normalizedEmail = email.toLowerCase().trim();
 
-    // 1. Verificar se a empresa existe
     const company = await prisma.company.findUnique({
       where: { id: companyId },
     });
@@ -126,7 +124,6 @@ export class CompanyService {
       );
     }
 
-    // 2. Buscar o usuário por email
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
@@ -137,7 +134,6 @@ export class CompanyService {
       );
     }
 
-    // 3. Verificar se já é membro da empresa
     const existingMember =
       await prisma.userCompany.findUnique({
         where: {
@@ -154,7 +150,6 @@ export class CompanyService {
       );
     }
 
-    // 4. Criar vínculo com a role especificada
     return prisma.userCompany.create({
       data: {
         userId: user.id,
@@ -190,10 +185,8 @@ export class CompanyService {
     email: string,
     password: string
   ) {
-    // Normalizar email
     const normalizedEmail = email.toLowerCase().trim();
 
-    // 1. Verificar se a empresa existe
     const company = await prisma.company.findUnique({
       where: { id: companyId },
     });
@@ -204,7 +197,6 @@ export class CompanyService {
       );
     }
 
-    // 2. Verificar se email já existe
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
@@ -215,10 +207,8 @@ export class CompanyService {
       );
     }
 
-    // 3. Criptografar senha
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // 4. Criar User + UserCompany em transação
     return prisma.$transaction(async tx => {
       const user = await tx.user.create({
         data: {

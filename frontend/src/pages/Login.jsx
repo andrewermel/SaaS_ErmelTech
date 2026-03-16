@@ -21,7 +21,7 @@ export default function Login() {
     try {
       await login(email, password);
       setSuccess(true);
-      // Navega para a home após login bem-sucedido
+
       setTimeout(() => {
         window.location.hash = ROUTES.SNACKS;
       }, 500);

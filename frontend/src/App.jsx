@@ -24,12 +24,8 @@ function AppContent() {
     useState('');
   const [menuKey, setMenuKey] = useState(0);
 
-  // Check if current route is a public menu page
-  // (mantido para uso futuro)
-
   useEffect(() => {
     const hash = window.location.hash || '';
-    // Extrai slug se já estiver em rota de cardápio ao carregar
     if (hash.startsWith('#/menu/')) {
       setMenuCompanySlug(hash.replace('#/menu/', ''));
     }
@@ -48,14 +44,12 @@ function AppContent() {
     const handleHashChange = () => {
       const hash = window.location.hash || ROUTES.LOGIN;
 
-      // Extrai slug se for rota de cardápio
       if (hash.startsWith('#/menu/')) {
         const slug = hash.replace('#/menu/', '');
         setMenuCompanySlug(slug);
-        setMenuKey(k => k + 1); // força remount e refetch
+        setMenuKey(k => k + 1);
       }
 
-      // Redireciona para login se não autenticado
       const publicRoutes = [ROUTES.LOGIN, ROUTES.REGISTER];
       if (
         !isAuthenticated &&

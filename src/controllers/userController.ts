@@ -32,7 +32,6 @@ export const createUser = async (
 ): Promise<Response> => {
   const { name, email, password, companyName } = req.body;
 
-  // Validar campos obrigatórios
   const nameError = validateRequired(name, 'Name');
   if (nameError) return sendValidationError(nameError, res);
 
@@ -47,14 +46,12 @@ export const createUser = async (
   if (passwordError)
     return sendValidationError(passwordError, res);
 
-  // Validar formato de email
   if (!validateEmail(email)) {
     return res
       .status(400)
       .json({ error: VALIDATION_MESSAGES.INVALID_EMAIL });
   }
 
-  // Validar força da senha
   if (!validatePassword(password)) {
     return res.status(400).json({
       error: VALIDATION_MESSAGES.WEAK_PASSWORD,

@@ -12,7 +12,6 @@ class ApiService {
       },
     };
 
-    // Se não for FormData, adicionar Content-Type
     if (!(options.body instanceof FormData)) {
       config.headers['Content-Type'] = 'application/json';
     }

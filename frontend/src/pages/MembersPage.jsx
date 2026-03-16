@@ -15,7 +15,6 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Form state
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +23,6 @@ export default function MembersPage() {
   const companyId = user?.companyId;
   const userRole = user?.role;
 
-  // Buscar membros da empresa
   useEffect(() => {
     if (!companyId || !isAuthenticated) return;
 
@@ -58,7 +56,6 @@ export default function MembersPage() {
     fetchMembers();
   }, [companyId, isAuthenticated]);
 
-  // Enviar formulário
   const handleSubmit = async e => {
     e.preventDefault();
 
