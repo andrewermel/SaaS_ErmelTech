@@ -35,17 +35,21 @@ services:
       DATABASE_URL: postgresql://blacklanches:blacklanches123@postgres:5432/blacklanches_db
       JWT_SECRET: sua_chave_secreta_super_segura_123456
       PORT: 3000
-      NODE_ENV: production
+      NODE_ENV: development
     ports:
       - '3001:3000'
+      - '9229:9229'
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       # 📁 Monta pasta de uploads
       - ./public/uploads:/app/backend/public/uploads
+      # 📁 Monta código-fonte para hot reload
+      - ./src:/app/backend/src
     networks:
       - blacklanches-network
+    command: sh -c "sleep 10 && npx prisma migrate deploy && node --inspect=0.0.0.0:9229 --loader ts-node/esm src/index.ts"
 
   # 🎨 Frontend (React + Vite)
   frontend:

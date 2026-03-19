@@ -21,5 +21,5 @@ RUN chmod +x /app/backend/entrypoint.sh
 # 🏃 Comando padrão - executa script que roda migrações e inicia servidor
 CMD ["/app/backend/entrypoint.sh"]
 
-# 📍 Expõe a porta do servidor
-EXPOSE 3000
+# 📍 Expõe as portas do servidor e debug
+EXPOSE 3000 9229
