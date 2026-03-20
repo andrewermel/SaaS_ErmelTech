@@ -1,0 +1,35 @@
+# Render configuration to deploy the backend and link the Postgres instance
+# Replace the JWT_SECRET value below with the secret you generated
+
+services:
+  - type: web
+    name: saas-ermeltech-backend
+    runtime: node
+    plan: free
+    # Install dependencies (Render runs this on each deploy)
+    buildCommand: npm install
+    # Start command: uses the same script as local dev (ts-node ESM loader)
+    startCommand: npm run dev
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '3000'
+      - key: JWT_SECRET
+        value: 'REPLACE_WITH_YOUR_JWT_SECRET'
+      # DATABASE_URL will be injected from the database declared below
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saas-ermeltech-db-prod
+          property: connectionString
+
+# Declare the managed Postgres instance (already created in your account)
+databases:
+  - name: saas-ermeltech-db-prod
+    plan: free
+
+# Notes:
+# - After committing this file to your repo (main branch), run `render create --repo GITHUB_REPO_URL`
+#   or connect the repo via the Render dashboard to enable automatic deploys.
+# - Replace the JWT secret above with a secure value (or set it in the Render dashboard env vars).
+# - If you prefer a production build flow, add a `build` script to package.json and change startCommand accordingly.
