@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loading } from './components/Loading';
 import { ToastProvider } from './components/Toast';
-import { ROUTES } from './constants';
+import { API_BASE_URL, ROUTES } from './constants';
 import {
   AuthProvider,
   useAuth,
@@ -22,6 +22,8 @@ function AppContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuCompanySlug, setMenuCompanySlug] =
     useState('');
+  const [menuCompanyName, setMenuCompanyName] =
+    useState('');
   const [menuKey, setMenuKey] = useState(0);
 
   useEffect(() => {
@@ -39,6 +41,33 @@ function AppContent() {
       setRoute(hash);
     }
   }, [isAuthenticated]);
+
+  // Buscar nome da empresa quando entrar em /menu/:slug
+  useEffect(() => {
+    if (!menuCompanySlug) {
+      setMenuCompanyName('');
+      return;
+    }
+
+    const fetchCompanyName = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/v1/public/menu/${menuCompanySlug}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setMenuCompanyName(data.company?.name || '');
+        }
+      } catch (err) {
+        console.error(
+          'Erro ao buscar nome da empresa:',
+          err
+        );
+      }
+    };
+
+    fetchCompanyName();
+  }, [menuCompanySlug]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -104,7 +133,9 @@ function AppContent() {
         <h1 className="title">
           {isAuthenticated && user?.companyName
             ? user.companyName
-            : 'ErmelTech'}
+            : route.startsWith('#/menu/') && menuCompanyName
+              ? menuCompanyName
+              : 'ErmelTech'}
         </h1>
         {isAuthenticated && user && (
           <div className="header-info">
@@ -211,7 +242,9 @@ function AppContent() {
         ) : route.startsWith('#/menu/') ? (
           <MenuPage
             key={menuKey}
-            companySlug={menuCompanySlug || user?.companySlug}
+            companySlug={
+              menuCompanySlug || user?.companySlug
+            }
           />
         ) : (
           <SnackPage />
