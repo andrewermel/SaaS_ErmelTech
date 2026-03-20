@@ -211,7 +211,9 @@ function AppContent() {
         ) : route.startsWith('#/menu/') ? (
           <MenuPage
             key={menuKey}
-            companySlug={menuCompanySlug || user?.companySlug}
+            companySlug={
+              menuCompanySlug || user?.companySlug
+            }
           />
         ) : (
           <SnackPage />
