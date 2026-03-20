@@ -208,17 +208,11 @@ function AppContent() {
           <PortionPage />
         ) : route === ROUTES.MEMBERS ? (
           <MembersPage />
-        ) : route.startsWith('#/menu/') &&
-          (user?.role === 'OWNER' ||
-            user?.role === 'ADMIN') ? (
+        ) : route.startsWith('#/menu/') ? (
           <MenuPage
             key={menuKey}
-            companySlug={
-              menuCompanySlug || user?.companySlug
-            }
+            companySlug={menuCompanySlug || user?.companySlug}
           />
-        ) : route.startsWith('#/menu/') ? (
-          <HomePage />
         ) : (
           <SnackPage />
         )}
