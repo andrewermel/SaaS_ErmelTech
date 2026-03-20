@@ -58,7 +58,7 @@ export const getCompany = async (
 
   try {
     const company = await companyService.findById(
-      parseInt(id)
+      Number.parseInt(id)
     );
     if (!company)
       return res
@@ -91,7 +91,7 @@ export const updateCompany = async (
 
   try {
     const company = await companyService.update(
-      parseInt(id),
+      Number.parseInt(id),
       { name, email, phone }
     );
     return res.json(company);
@@ -119,7 +119,7 @@ export const getMembers = async (
 
   try {
     const members = await companyService.findMembers(
-      parseInt(id)
+      Number.parseInt(id)
     );
     return res.json(members);
   } catch (error) {
@@ -163,7 +163,7 @@ export const inviteMember = async (
 
   try {
     const userCompany = await companyService.inviteMember(
-      parseInt(id),
+      Number.parseInt(id),
       email,
       role
     );
@@ -223,7 +223,7 @@ export const createMember = async (
 
   try {
     const userCompany = await companyService.createMember(
-      parseInt(id),
+      Number.parseInt(id),
       name,
       email,
       password
