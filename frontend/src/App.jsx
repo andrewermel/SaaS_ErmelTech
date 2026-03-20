@@ -51,9 +51,11 @@ function AppContent() {
       }
 
       const publicRoutes = [ROUTES.LOGIN, ROUTES.REGISTER];
+      const isMenuRoute = hash.startsWith('#/menu/');
       if (
         !isAuthenticated &&
-        !publicRoutes.includes(hash)
+        !publicRoutes.includes(hash) &&
+        !isMenuRoute
       ) {
         window.location.hash = ROUTES.LOGIN;
         setRoute(ROUTES.LOGIN);

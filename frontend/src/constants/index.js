@@ -9,7 +9,8 @@ export const ROUTES = {
   MENU: '#/menu/:companySlug',
 };
 
-export const API_BASE_URL = 'https://saas-ermeltech-backend.onrender.com';
+export const API_BASE_URL =
+  'https://saas-ermeltech-backend.onrender.com';
 
 export const API_ENDPOINTS = {
   AUTH: {
