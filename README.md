@@ -362,17 +362,6 @@ npm run test:setup
 ```bash
 npm test
 ```
-
-### Variáveis de ambiente para testes
-
-O arquivo `.env.test` (criado localmente, não commitado) configura a conexão com o banco de teste:
-
-```env
-DATABASE_URL=postgresql://test:test@localhost:5433/test_db
-JWT_SECRET=test-secret-key-for-ci
-NODE_ENV=test
-```
-
 **Testes incluem:**
 
 - ✅ Autenticação (login, registro)
